@@ -193,7 +193,7 @@ ZIO = {
 	    ZState.store(value);
 	}
 	//asyncronous read is done.  start z-machine again
-	ZMain.run();
+	ZState.run();
     }
     ,
     'read_char_timed':function(time,routine){
@@ -214,7 +214,7 @@ ZIO = {
     ,
     'read_char_timeout':function(time,routine){
 	if (ZIO.read_char_ready) {
-	    var abort = ZMain.call_interrupt_routine(routine);
+	    var abort = ZState.call_interrupt_routine(routine);
 	    if (abort) {
 		ZIO.end_read_char(0);
 	    } else {
@@ -227,7 +227,7 @@ ZIO = {
     ,
     'read_timeout':function(time,routine){
 	if (ZIO.read_ready) {
-	    var abort = ZMain.call_interrupt_routine(routine);
+	    var abort = ZState.call_interrupt_routine(routine);
 	    if (abort) {
 		ZIO.input_buffer = [0];
 		ZIO.end_read();
@@ -261,7 +261,7 @@ ZIO = {
 	ZIO.read_char_timer = undefined;
 	ZState.store(zscii);
 	//asyncronous read is done.  start z-machine again
-	ZMain.run();
+	ZState.run();
     }
     ,
     'fill_text_buffer':function(text,input){

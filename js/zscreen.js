@@ -19,6 +19,15 @@ ZScreen = {
     ,
     'font':null
     ,
+    'init_body':function(){
+	$("body").empty();
+	$("body").append('<div class = "screen"></div>');
+	$("body").append('<div class = "error"></div>');
+	$(".error").css("color","red");
+	//TODO move this somewhere better!
+	ZState.storyfile = $('body').attr('storyfile'); //'../stories/zork.z2';
+    }
+    ,
     'init_screen':function(){
 	$(".screen").empty();
 	var body_width = $("body").width();

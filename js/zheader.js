@@ -1,7 +1,7 @@
 ZHeader = {
     'set_for_new_game':function(){
 	var ver = ZHeader.version();
-	$(".screen").append("Version: " + ver + "<br>");
+	ZError.debug("Version: " + ver);
 	var release = ZMemory.get_word(2);
 	var serial = "";
 	if (ver > 1) {
@@ -12,7 +12,7 @@ ZHeader = {
 					 ZMemory.get_byte(22),
 					 ZMemory.get_byte(23));
 	}
-	$(".screen").append("Story File: " + release + "." + serial + "<br>");
+	ZError.debug("Story File: " + release + "." + serial);
 	var flags1 = ZMemory.get_byte(1);
 	//Set capability flags
 	if (ver <= 3) {

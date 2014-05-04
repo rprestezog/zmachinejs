@@ -5,6 +5,8 @@ ZState = {
     ,
     'undo':''
     ,
+    'storyfile':null
+    ,
     'init_state':function(){
 	ZState.PC = ZHeader.get_initial_PC_addr();
 	ZState.call_stack = [];
@@ -19,6 +21,35 @@ ZState = {
 	frame.local_var_count = 0; 
 	frame.local_vars = [];
 	ZState.push_stack_frame(frame);
+    }
+    ,
+    'run':function(){
+	var more = 1;
+	while (more) {
+	    var error = ZError.is_dead();
+	    if (error) {
+		ZError.log("The interpreter had a fatal error.");
+		more = 0;
+	    } else {
+		more = ZState.follow_instruction();
+	    }
+	}
+    }
+    ,
+    'call_interrupt_routine':function(routine){
+	//not in spec, but I'm restricting interrupt routines to opcodes which return 1
+	//that is, no read read_char restart quit
+	ZState.clear_interrupt_value();
+	ZState.call_procedure(routine);
+	ZState.set_interrupt_flag();
+	ZState.run();
+	var result = ZState.get_interrupt_value();
+	if (result != undefined) {
+	    return result;
+	} else {
+	    ZError.die("Restricted opcode called from interrupt routine (or other error)");
+	    return 1; //to abort read/read_char
+	}
     }
     ,
     'follow_instruction':function(){
@@ -429,7 +460,7 @@ ZState = {
 	    save_game.Memory = ZMemory.memory;
 	    save_game.Stack = ZState.call_stack;
 	    save_game.PC = ZState.PC;
-            var save_game_key = ZMain.storyfile;
+            var save_game_key = ZState.storyfile;
 	    var save_game_name = ZIO.get_save_game_name();
             //TODO try and catch save errors
             localStorage.setItem(save_game_key + save_game_name, JSON.stringify(save_game));
@@ -444,7 +475,7 @@ ZState = {
     'restore_game':function(){
 	if(typeof(Storage)!=="undefined") {
             // Yes! localStorage support!
-            var save_game_key = ZMain.storyfile;
+            var save_game_key = ZState.storyfile;
 	    var save_game_name = ZIO.get_save_game_name();
 	    var save_game_JSON = localStorage.getItem(save_game_key + save_game_name);
 	    if (save_game_JSON == undefined) {
