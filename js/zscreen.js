@@ -20,12 +20,15 @@ ZScreen = {
     'font':null
     ,
     'init_body':function(){
+	//TODO stop breaking back button
+	//maybe something like 
+	//location.hash = "game";
+	//and somthing like
+	//window.onhashchange = somthing clever
 	$("body").empty();
 	$("body").append('<div class = "screen"></div>');
 	$("body").append('<div class = "error"></div>');
 	$(".error").css("color","red");
-	//TODO move this somewhere better!
-	ZState.storyfile = $('body').attr('storyfile'); //'../stories/zork.z2';
     }
     ,
     'init_screen':function(){

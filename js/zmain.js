@@ -34,8 +34,12 @@ ZMain = {
     }
 };
 
-require(['jquery','zmemory','zheader','zstate','zops','zobject','zscreen','zstring','zio','zdictionary','zrandom','zerror'], 
-	function(jquery,zmemory,zheader,zstate,zops,zobject,zscreen,zstring,zio,zdictionary,zrandom,zerror) {
-	    ZMain.init();
+require(['jquery','zmemory','zheader','zstate','zops','zobject','zscreen','zstring','zio','zdictionary','zrandom','zerror','zgif'], 
+	function(jquery,zmemory,zheader,zstate,zops,zobject,zscreen,zstring,zio,zdictionary,zrandom,zerror,zgif) {
+	    $('a.story').click(function(e) {
+		    ZState.storyfile = $(this).attr("href");
+		    ZMain.init();
+		    e.preventDefault();
+		});
 	});
 
