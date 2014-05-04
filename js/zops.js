@@ -725,8 +725,10 @@ ZOps = {
 	}
 	if (time > 0 && routine > 0) {
 	    return ZIO.read_timed(text,parse,time,routine);
-	} else {
+	} else if (parse > 0){
 	    return ZIO.read(text,parse);
+	} else {
+	    return ZIO.read(text,0);
 	}
     }
     ,
