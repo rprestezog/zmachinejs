@@ -7,6 +7,25 @@ ZState = {
     ,
     'storyfile':null
     ,
+    'load_game':function(){
+	ZScreen.init_body();
+	ZError.debug("Loading " + ZState.storyfile);
+	ZMemory.load_memory_from_file(ZState.storyfile,ZState.start_game);
+	//asynchronous
+    }
+    ,
+    'start_game':function(){
+	ZError.debug("Initializing header");
+	ZHeader.set_for_new_game();
+	ZScreen.init_screen();
+	ZIO.init_io();
+	ZState.init_state();
+	if (ZHeader.version()==6){
+	    ZError.die("Version 6 games are not supported.");
+	}
+	ZState.run();
+    }
+    ,
     'init_state':function(){
 	ZState.PC = ZHeader.get_initial_PC_addr();
 	ZState.call_stack = [];
