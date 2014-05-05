@@ -8,15 +8,19 @@ ZMemory = {
 	oReq.open("GET", url, true);
 	oReq.responseType = "arraybuffer";
 	oReq.onload = function (oEvent) {
-	    var arrayBuffer = oReq.response;
-	    if (arrayBuffer) {
-		var byteArray = new Uint8Array(arrayBuffer);
-		ZMemory.memory = {};
-		ZMemory.file = [];
-		for (var i = 0; i < byteArray.byteLength; i++) {
-		    ZMemory.file.push(byteArray[i]);
-		}
-		callback();
+	    if (oReq.status==200) {
+		var arrayBuffer = oReq.response;
+		if (arrayBuffer) {
+		    var byteArray = new Uint8Array(arrayBuffer);
+		    ZMemory.memory = {};
+		    ZMemory.file = [];
+		    for (var i = 0; i < byteArray.byteLength; i++) {
+			ZMemory.file.push(byteArray[i]);
+		    }
+		    callback();
+		} else {
+		    ZError.die("Unexpected file at " + url);
+		} 
 	    } else {
 		ZError.die("Failed to load " + url);
 	    }
