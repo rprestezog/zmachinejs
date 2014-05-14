@@ -354,8 +354,7 @@ ZIO = {
 	    if(ZIO.read_ready) {
 		if (ZIO.input_buffer.length > 0) {
 		    ZIO.input_buffer.pop();
-		    //TODO move this to ZScreen
-		    $(".lower > .cursor").prev().remove();
+		    ZScreen.backspace();
 		    ZScreen.scroll_to_bottom();
 		}
 	    } else if (ZIO.read_char_ready) {

@@ -428,6 +428,11 @@ ZScreen = {
 	//ZScreen.scroll_to_bottom();
     }
     ,
+    'backspace':function(){
+	//TODO check if we're in a good place to back space?
+	$(".lower > .cursor").prev().remove();
+    }
+    ,
     'print_room_name':function(room_name){
 	$(".status > .room").text(room_name);
     }
