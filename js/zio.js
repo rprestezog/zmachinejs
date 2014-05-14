@@ -24,8 +24,8 @@ ZIO = {
 	ZIO.input_buffer = [];
 	ZIO.read_ready = false;
 	ZIO.read_char_ready = false;
-        $(document).unbind('keydown', ZIO.keydown).keydown(ZIO.keydown);
-        $(document).unbind('keypress', ZIO.keypress).keypress(ZIO.keypress);
+	ZDOM.set_keydown_handler(ZIO.keydown);
+	ZDOM.set_keypress_handler(ZIO.keypress);
 	//TODO initialize Header transcript bits from here
     }
     ,
@@ -330,26 +330,26 @@ ZIO = {
 	}
     }
     ,
-    'keydown':function(e){
+    'keydown':function(which){
         if (!ZIO.read_ready && !ZIO.read_char_ready) {
             return false;
         }
-        if (e.which == 32) {
+        if (which == 32) {
             //space
             return true;
-        } else if (e.which >= 48 && e.which <= 57) {
+        } else if (which >= 48 && which <= 57) {
             //0-9
             return true;
-        } else if (e.which >= 65 && e.which <= 90) {
+        } else if (which >= 65 && which <= 90) {
             //a-z
             return true;
-        } else if (e.which >= 186 && e.which <= 192) {
+        } else if (which >= 186 && which <= 192) {
             //semi-colon,equal sign,comma,dash,period,forward slash,grave accent
             return true;
-        } else if (e.which >= 219 && e.which <= 222) {
+        } else if (which >= 219 && which <= 222) {
             //open bracket,back slash,close braket,single quote
             return true;
-        } else if (e.which == 8) {
+        } else if (which == 8) {
             //back space 
 	    if(ZIO.read_ready) {
 		if (ZIO.input_buffer.length > 0) {
@@ -361,7 +361,7 @@ ZIO = {
 	    } else if (ZIO.read_char_ready) {
 		ZIO.end_read_char(8);
 	    }
-        } else if (e.which == 13) {
+        } else if (which == 13) {
             //enter
 	    if(ZIO.read_ready) {
 		ZIO.input_buffer.push(13);
@@ -370,50 +370,50 @@ ZIO = {
 	    } else if (ZIO.read_char_ready) {
 		ZIO.end_read_char(13);
 	    }
-        } else if (e.which >= 37 && e.which <= 40) {
+        } else if (which >= 37 && which <= 40) {
 	    //arrow keys L,U,R,D
 	    if (ZIO.read_char_ready) {
-		if (e.which == 37) {
+		if (which == 37) {
 		    //Left
 		    ZIO.end_read_char(131);
-		} else if (e.which == 38) {
+		} else if (which == 38) {
 		    //Up
 		    ZIO.end_read_char(129);
-		} else if (e.which == 39) {
+		} else if (which == 39) {
 		    //Right
 		    ZIO.end_read_char(132);
-		} else if (e.which == 40) {
+		} else if (which == 40) {
 		    //Down
 		    ZIO.end_read_char(130);
 		}
 	    } else {
-		if (e.which == 38) {
+		if (which == 38) {
                     //Up
                     ZScreen.scroll_up();
-                } else if (e.which == 40) {
+                } else if (which == 40) {
                     //Down
                     ZScreen.scroll_down();
                 }
 	    }
-	} else if (e.which === 34) { 
+	} else if (which === 34) { 
 	    // PAGE DOWN
 	    ZScreen.page_down();
-	} else if (e.which === 33) {
+	} else if (which === 33) {
 	    // PAGE UP
 	    ZScreen.page_up();
-	} else if (e.which === 27) {
+	} else if (which === 27) {
 	    //escape
 	    if (ZIO.read_char_ready) {
 		ZIO.end_read_char(27);
 	    }	
         } else {
             //TODO function keys, and number pad
-	    //ZError.log('Key Down: ' + e.which);
+	    //ZError.log('Key Down: ' + which);
         }
         return false; //prevents default and keypress
     }
     ,
-    'keypress':function(e){
+    'keypress':function(which){
         if (!ZIO.read_ready && !ZIO.read_char_ready) {
             return false;
         }
@@ -424,10 +424,10 @@ ZIO = {
 	    };
 	}
 	var zscii = 0;
-        if (e.which >= 32 && e.which <= 126) {
-            zscii = e.which;
+        if (which >= 32 && which <= 126) {
+            zscii = which;
         } else {
-	    zscii = ZString.unicode_to_zscii(e.which);
+	    zscii = ZString.unicode_to_zscii(which);
 	}
 	if (zscii > 0) {
 	    if (ZIO.read_ready) {
@@ -455,7 +455,7 @@ ZIO = {
                 ZIO.end_read_char(zscii);
             }
 	} else {
-            ZError.log("Key Press! [" + e.which + "]");
+            ZError.log("Key Press! [" + which + "]");
 	}
         return false; //prevents default
     }
