@@ -4,7 +4,7 @@ ZError = {
     'debugging':false
     ,
     'log':function(text){
-        $(".error").append("<div>" + text + "</div>");	
+	ZDOM.log_error(text)
     }
     ,
     'debug':function(text){
@@ -23,7 +23,7 @@ ZError = {
     }
     ,
     'clear_errors':function(){
-	$(".error").empty()
+	ZDOM.clear_errors()
     }
     ,
     'start_debug':function(){
