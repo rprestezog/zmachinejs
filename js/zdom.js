@@ -33,4 +33,12 @@ ZDOM = {
 	}
 	$(document).unbind('keypress', old_handler).keypress(ZDOM.keypress_handler);
     }
+    ,
+    'set_storyfile_loader':function(callback){
+	$('a.story').click(function(e) {
+		callback( $(this).attr("href") );
+		e.preventDefault();
+	    });
+    }
+
 };

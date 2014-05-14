@@ -8,10 +8,5 @@ require.config({
 
 require(['jquery','zmemory','zheader','zstate','zops','zobject','zscreen','zstring','zio','zdictionary','zrandom','zerror','zgif','zdom'], 
 	function(jquery,zmemory,zheader,zstate,zops,zobject,zscreen,zstring,zio,zdictionary,zrandom,zerror,zgif,zdom) {
-	    $('a.story').click(function(e) {
-		    ZState.storyfile = $(this).attr("href");
-		    ZState.load_game();
-		    e.preventDefault();
-		});
+	    ZDOM.set_storyfile_loader(ZState.load_game);
 	});
-
