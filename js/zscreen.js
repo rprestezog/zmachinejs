@@ -19,30 +19,15 @@ ZScreen = {
     ,
     'font':null
     ,
-    'init_body':function(){
-	//TODO stop breaking back button
-	//maybe something like 
-	//location.hash = "game";
-	//and somthing like
-	//window.onhashchange = somthing clever
-	$("body").empty();
-	$("body").append('<div class = "screen"></div>');
-	$("body").append('<div class = "error"></div>');
-	$(".error").css("color","red");
-    }
-    ,
     'init_screen':function(){
-	$(".screen").empty();
-	var body_width = $("body").width();
-	var body_height = $("body").height();
-	$(".screen").append('<div class="mono" style="font-family:monospace"><span>&nbsp;</span></div>');
-	var mono_width = $(".screen > .mono > span").width();
-	var mono_height = $(".screen > .mono > span").height();
+	var body_size = ZDOM.get_body_size();
+	var body_width = body_size.width;
+	var body_height = body_size.height;
+	var mono_size = ZDOM.get_monospace_size();
+	var mono_width = mono_size.width;
+	var mono_height = mono_size.height;
 	ZScreen.mono_width = mono_width;
 	ZScreen.mono_height = mono_height;
-	$(".screen").append('<div class="serif" style="font-family:serif"><span>&nbsp;</span></div>');
-	var serif_width = $(".screen > .serif > span").width();
-	var serif_height = $(".screen > .serif > span").height();
 	//pick a screen width (in monospace characters)
 	var max_width = Math.floor(body_width / mono_width);
 	var max_height = Math.floor(body_height / mono_height);
@@ -62,7 +47,9 @@ ZScreen = {
 	ZScreen.style = 0;
 	ZScreen.font = 1;
 	//now start for real
-       	$(".screen").empty().width(ZScreen.width*mono_width).height(ZScreen.height*mono_height);
+	
+	ZDOM.clear_screen();
+	ZDOM.set_screen_size(ZScreen.width*mono_width,ZScreen.height*mono_height);
 	ZHeader.set_screen_size(ZScreen.width,ZScreen.height);
 	ZScreen.set_colour(1,1);
 	//The header sets default text to black on white. Should this be done here?
@@ -71,10 +58,10 @@ ZScreen = {
 	    $(".screen").append('<div class="status" style="font-family:monospace;background-color:black;color:white">' +
 				'<span style="float:left">&nbsp;</span>'+
 				'<span class="room" style="float:left"></span>'+
+				'<span>&nbsp;</span>'+
 				'<span style="float:right">&nbsp;</span>'+
 				'<span class="score" style="float:right"></span>' +
-				'<span>&nbsp;</span>'+
-				'</div></div>');
+				'</div>');
 	}
 	if (ver >= 3) {
 	    $(".screen").append('<div class="upper" style="font-family:monospace"></div>');

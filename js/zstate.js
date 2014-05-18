@@ -9,14 +9,14 @@ ZState = {
     ,
     'load_game':function(url){
 	ZState.storyfile = url;
-	ZScreen.init_body();
+	ZDOM.init_body();
 	ZError.debug("Loading " + ZState.storyfile);
 	ZMemory.load_memory_from_file(ZState.storyfile,ZState.start_game);
 	//asynchronous
     }
     ,
     'reload_game':function(){
-	ZScreen.init_body();
+	ZDOM.init_body();
 	ZError.debug("Loading " + ZState.storyfile);
 	ZMemory.load_memory_from_file(ZState.storyfile,ZState.start_game);
 	//asynchronous

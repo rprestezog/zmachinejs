@@ -2,7 +2,44 @@ ZDOM = {
     // This file will isolate all of the functions which touch the DOM
     // The idea here is that if I wanted to switch from jquery to something else
     // I'd only have to mess with this file.
-    'clear_errors':function(){
+    'init_body':function(){
+        //TODO stop breaking back button
+        //maybe something like
+        //location.hash = "game";
+        //and somthing like
+        //window.onhashchange = something clever
+        $("body").empty();
+        $("body").append('<div class = "screen"></div>');
+        $("body").append('<div class = "error"></div>');
+        $(".error").css("color","red");
+    }
+    ,
+    'clear_screen':function(){
+	$(".screen").empty();
+    }
+    ,
+    'set_screen_size':function(width,height){
+	$(".screen").width(width).height(height);
+    }
+    ,
+    'get_body_size':function(){
+	var body_width = $("body").width();
+	var body_height = $("body").height();
+	return {'width': body_width,
+                'height': body_height};
+    }
+    ,
+    'get_monospace_size':function(){
+	$(".screen").append('<div class="mono" style="font-family:monospace"><span>&nbsp;</span></div>');
+	var mono_width = $(".screen > .mono > span").width();
+	var mono_height = $(".screen > .mono > span").height();
+	$(".screen > .mono").remove();
+
+	return {'width': mono_width,
+		'height': mono_height};
+    }
+    ,
+     'clear_errors':function(){
 	$(".error").empty()
     }
     ,
