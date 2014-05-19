@@ -39,6 +39,24 @@ ZDOM = {
 		'height': mono_height};
     }
     ,
+    'add_lower_window':function(){
+	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
+    }
+    ,
+    'add_upper_window':function(){
+	$(".screen").append('<div class="upper" style="font-family:monospace"></div>');
+    }
+    ,
+    'add_status_line':function(){
+	$(".screen").append('<div class="status" style="font-family:monospace;background-color:black;color:white">' +
+                                '<span style="float:left">&nbsp;</span>'+
+                                '<span class="room" style="float:left"></span>'+
+                                '<span>&nbsp;</span>'+
+                                '<span style="float:right">&nbsp;</span>'+
+                                '<span class="score" style="float:right"></span>' +
+			    '</div>');
+    }
+    ,
      'clear_errors':function(){
 	$(".error").empty()
     }

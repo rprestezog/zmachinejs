@@ -55,19 +55,13 @@ ZScreen = {
 	//The header sets default text to black on white. Should this be done here?
 	var ver = ZHeader.version();
 	if (ver <= 3) {
-	    $(".screen").append('<div class="status" style="font-family:monospace;background-color:black;color:white">' +
-				'<span style="float:left">&nbsp;</span>'+
-				'<span class="room" style="float:left"></span>'+
-				'<span>&nbsp;</span>'+
-				'<span style="float:right">&nbsp;</span>'+
-				'<span class="score" style="float:right"></span>' +
-				'</div>');
+	    ZDOM.add_status_line();
 	}
 	if (ver >= 3) {
-	    $(".screen").append('<div class="upper" style="font-family:monospace"></div>');
+	    ZDOM.add_upper_window();
 	}
 	//TODO figure out how to prevent room and score collisions
-	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
+	ZDOM.add_lower_window();
 	
 	ZScreen.erase_window(-1);
     }
