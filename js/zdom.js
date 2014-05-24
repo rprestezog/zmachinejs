@@ -48,6 +48,15 @@ ZDOM = {
 	$(".lower").empty().css("background-color",background_color).append(cursor);
     }
     ,
+    'show_lower_cursor':function(background_color){
+	$(".screen > .lower > .cursor").css("background-color",background_color);
+    }
+    ,
+    'hide_lower_cursor':function(){
+	var background_color = $(".screen > .lower").css("background-color");
+	$(".screen > .lower > .cursor").css("background-color",background_color);
+    }
+    ,
     'set_lower_height':function(h){
 	$(".screen > .lower").height(h);
     }

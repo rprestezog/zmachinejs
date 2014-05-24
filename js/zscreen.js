@@ -345,7 +345,7 @@ ZScreen = {
 	    ZScreen.upper_cursor.old_color = ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,"#D3D3D3");
 	    ZScreen.upper_cursor.shown = true;
 	} else {
-	    $(".lower > .cursor").css("background-color","#D3D3D3");
+	    ZDOM.show_lower_cursor("#D3D3D3");
 	}
     }
     ,
@@ -354,7 +354,7 @@ ZScreen = {
 	    ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,ZScreen.upper_cursor.old_color);
 	    ZScreen.upper_cursor.shown = false;
 	}
-	$(".lower > .cursor").css("background-color","white");
+	ZDOM.hide_lower_cursor();
     }
     ,
     'print_string':function(string){
