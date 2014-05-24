@@ -121,22 +121,20 @@ ZScreen = {
     ,
     'erase_window':function(window){
 	if (window == -1) {
-	    //we postpone collapsing the upper window until next turn?
+	    //do we postpone collapsing the upper window until next turn?
 	    //I think we don't in this case, as correct behavior would
 	    //have any quote box text erased for the lower window
 	    ZScreen.cur_upper_lines = 0;
 	    ZScreen.dom_upper_lines = 0;
 	    ZScreen.max_upper_lines = 0;
 	    ZScreen.seen_upper_lines = 0;
-	    $(".upper").empty();
-	    $(".lower").empty().css("background-color",ZScreen.background).append('<span class="cursor" '+
-			'style="background-color:'+ZScreen.background+';font-family:monospace" >&nbsp;</span>');
+	    ZDOM.clear_upper_window();
+	    ZDOM.clear_lower_window(ZScreen.background);
 	    ZScreen.window = 'lower';
 	    ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    ZScreen.resize_lower_window();
 	} else if (window == 0) {
-	    $(".lower").empty().css("background-color",ZScreen.background).append('<span class="cursor" '+
-			'style="background-color:'+ZScreen.background+';font-family:monospace" >&nbsp;</span>');
+	    ZDOM.clear_lower_window(ZScreen.background);
 	    ZScreen.resize_lower_window();
 	    //TODO move cursor to bottom left for version 4
 	} else if (window == 1) {
@@ -173,8 +171,8 @@ ZScreen = {
     'split_window':function(lines){
 	ZScreen.hide_cursor();
 	if (lines == 0) {
-	    $(".upper").empty();
-	    //TODO delay removing lines?
+	    //TODO should we delay removing lines?
+	    ZDOM.clear_upper_window();
 	    ZScreen.cur_upper_lines = 0;
 	    ZScreen.dom_upper_lines = 0;
 	    ZScreen.max_upper_lines = 0;
@@ -183,7 +181,7 @@ ZScreen = {
 	} else {
 	    var ver = ZHeader.version();
 	    if (ver == 3) {
-		$(".upper").empty();
+		ZDOM.clear_upper_window();
 		ZScreen.cur_upper_lines = 0;
 		ZScreen.dom_upper_lines = 0;
 		ZScreen.max_upper_lines = 0;
@@ -204,12 +202,9 @@ ZScreen = {
 	    if (ZScreen.max_upper_lines < ZScreen.cur_upper_lines) {
 		ZScreen.max_upper_lines = ZScreen.cur_upper_lines;
 	    }
-	    //TODO change it to do lazy widow shrinkage
 	    if (ZScreen.upper_cursor.y >= lines) {
 		ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    }
-	    //ZError.log(ZScreen.cur_upper_lines);
-	    //ZError.log(ZScreen.dom_upper_lines);
 	}
 	ZScreen.trim_upper_window();
 	ZScreen.resize_lower_window();

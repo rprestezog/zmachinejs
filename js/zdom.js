@@ -43,12 +43,21 @@ ZDOM = {
 	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
     }
     ,
+    'clear_lower_window':function(background_color){
+	var cursor = '<span class="cursor" style="background-color:'+background_color+';font-family:monospace" >&nbsp;</span>';
+	$(".lower").empty().css("background-color",background_color).append(cursor);
+    }
+    ,
     'set_lower_height':function(h){
 	$(".screen > .lower").height(h);
     }
     ,
     'add_upper_window':function(){
 	$(".screen").append('<div class="upper" style="font-family:monospace"></div>');
+    }
+    ,
+    'clear_upper_window':function(){
+	$(".screen > .upper").empty();
     }
     ,
     'remove_upper_line':function(){
