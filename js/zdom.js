@@ -43,6 +43,10 @@ ZDOM = {
 	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
     }
     ,
+     'set_lower_height':function(h){
+	$(".screen > .lower").height(h);
+    }
+    ,
     'clear_lower_window':function(background_color){
 	var cursor = '<span class="cursor" style="background-color:'+background_color+';font-family:monospace" >&nbsp;</span>';
 	$(".lower").empty().css("background-color",background_color).append(cursor);
@@ -65,16 +69,16 @@ ZDOM = {
 	$("<span>&nbsp;</span>").css(style).insertBefore(".lower > .cursor");
     }
     ,
+    'lower_backspace':function(){
+	$(".lower > .cursor").prev().remove();
+    }
+    ,
     'print_lower_img':function(img){
 	$("<span></span>").html(img).insertBefore(".lower > .cursor");
     }
     ,
     'print_lower_newline':function(){
 	$("<br/>").insertBefore(".lower > .cursor");
-    }
-    ,
-    'set_lower_height':function(h){
-	$(".screen > .lower").height(h);
     }
     ,
     'add_upper_window':function(){
@@ -151,6 +155,14 @@ ZDOM = {
                                 '<span style="float:right">&nbsp;</span>'+
                                 '<span class="score" style="float:right"></span>' +
 			    '</div>');
+    }
+    ,
+    'print_room_name':function(room_name){
+        $(".status > .room").text(room_name);
+    }
+    ,
+    'print_score':function(score){
+        $(".status > .score").text(score);
     }
     ,
      'clear_errors':function(){

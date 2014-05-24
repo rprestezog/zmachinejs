@@ -444,15 +444,15 @@ ZScreen = {
     ,
     'backspace':function(){
 	//TODO check if we're in a good place to back space?
-	$(".lower > .cursor").prev().remove();
+	ZDOM.lower_backspace();
     }
     ,
     'print_room_name':function(room_name){
-	$(".status > .room").text(room_name);
+	ZDOM.print_room_name(room_name);
     }
     ,
     'print_score':function(score){
-	$(".status > .score").text(score);
+	ZDOM.print_score(score);
     }
     ,
     'scroll_to_bottom':function() {
