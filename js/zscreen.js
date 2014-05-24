@@ -316,6 +316,7 @@ ZScreen = {
 	    ZScreen.hide_cursor();
 	    ZScreen.upper_cursor.x = column - 1;
 	    ZScreen.upper_cursor.y = line - 1;
+	    //TODO should we be checking the values here?
 	}
 	//TODO figure out what to do in lower window
     }
@@ -341,9 +342,7 @@ ZScreen = {
     'show_cursor':function(line,column){
 	ZScreen.hide_cursor();
 	if (ZScreen.window == 'upper') {
-	    var selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ") > span:eq("+ ZScreen.upper_cursor.x + ")";
-	    ZScreen.upper_cursor.old_color = $(selector).css("background-color");
-	    $(selector).css("background-color","#D3D3D3");
+	    ZScreen.upper_cursor.old_color = ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,"#D3D3D3");
 	    ZScreen.upper_cursor.shown = true;
 	} else {
 	    $(".lower > .cursor").css("background-color","#D3D3D3");
@@ -352,8 +351,7 @@ ZScreen = {
     ,
     'hide_cursor':function(line,column){
 	if (ZScreen.upper_cursor.shown) {
-	    var selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ") > span:eq("+ ZScreen.upper_cursor.x + ")";
-	    $(selector).css("background-color",ZScreen.upper_cursor.old_color);
+	    ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,ZScreen.upper_cursor.old_color);
 	    ZScreen.upper_cursor.shown = false;
 	}
 	$(".lower > .cursor").css("background-color","white");

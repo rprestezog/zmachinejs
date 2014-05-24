@@ -96,6 +96,13 @@ ZDOM = {
 	$(div_selector).append(blank_line);
     }
     ,
+    'toggle_upper_cursor':function(x,y,background_color){
+	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
+	var old_color = $(selector).css("background-color");
+	$(selector).css("background-color",background_color);
+	return old_color;
+    }
+    ,
     'add_status_line':function(){
 	$(".screen").append('<div class="status" style="font-family:monospace;background-color:black;color:white">' +
                                 '<span style="float:left">&nbsp;</span>'+
