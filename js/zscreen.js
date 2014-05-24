@@ -456,45 +456,22 @@ ZScreen = {
     }
     ,
     'scroll_to_bottom':function() {
-        var scrollHeight = $(".lower").prop ? $(".lower").prop('scrollHeight') : $(".lower").attr('scrollHeight');
-        $(".lower").scrollTop(scrollHeight);
+	ZDOM.scroll_to_bottom();
     }
     ,
     'scroll_up':function() {
-	ZScreen.scroll(- ZScreen.mono_height);
+	ZDOM.scroll_lower(-ZScreen.mono_height);
     }
     ,
     'scroll_down':function() {
-	ZScreen.scroll(ZScreen.mono_height);
+	ZDOM.scroll_lower(ZScreen.mono_height);
     }
     ,
     'page_up':function() {
-	var h = $(".lower").height();
-	ZScreen.scroll(-h);
+	ZDOM.page_up();
     }
     ,
     'page_down':function() {
-	var h = $(".lower").height();
-	ZScreen.scroll(h);
-    }
-    ,
-    'scroll': function(amount) {
-	var pos;
-	amount = Math.round(amount);
-	if ($(".lower").prop) {
-	    if (amount > $(".lower").prop('scrollTop') && amount > 0) {
-		$(".lower").prop('scrollTop', 0);
-	    }
-	    pos = $(".lower").prop('scrollTop');
-	    $(".lower").prop('scrollTop', pos + amount);
-	    return self;
-	} else {
-	    if (amount > $(".lower").attr('scrollTop') && amount > 0) {
-		$(".lower").attr('scrollTop', 0);
-	    }
-	    pos = $(".lower").attr('scrollTop');
-	    $(".lower").attr('scrollTop', pos + amount);
-	    return self;
-	}
+	ZDOM.page_down();
     }
 };

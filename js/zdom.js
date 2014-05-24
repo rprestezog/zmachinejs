@@ -47,6 +47,39 @@ ZDOM = {
 	$(".screen > .lower").height(h);
     }
     ,
+    'scroll_lower': function(amount) {
+        var pos;
+        amount = Math.round(amount);
+        if ($(".lower").prop) {
+            if (amount > $(".lower").prop('scrollTop') && amount > 0) {
+                $(".lower").prop('scrollTop', 0);
+            }
+            pos = $(".lower").prop('scrollTop');
+            $(".lower").prop('scrollTop', pos + amount);
+        } else {
+            if (amount > $(".lower").attr('scrollTop') && amount > 0) {
+                $(".lower").attr('scrollTop', 0);
+            }
+            pos = $(".lower").attr('scrollTop');
+            $(".lower").attr('scrollTop', pos + amount);
+        }
+    }
+    ,
+    'scroll_to_bottom':function() {
+        var scrollHeight = $(".lower").prop ? $(".lower").prop('scrollHeight') : $(".lower").attr('scrollHeight');
+        $(".lower").scrollTop(scrollHeight);
+    }
+    ,
+    'page_up':function() {
+        var h = $(".lower").height();
+        ZDOM.scroll_lower(-h);
+    }
+    ,
+    'page_down':function() {
+        var h = $(".lower").height();
+        ZDOM.scroll_lower(h);
+    }
+    ,
     'clear_lower_window':function(background_color){
 	var cursor = '<span class="cursor" style="background-color:'+background_color+';font-family:monospace" >&nbsp;</span>';
 	$(".lower").empty().css("background-color",background_color).append(cursor);
