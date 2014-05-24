@@ -75,7 +75,7 @@ ZDOM = {
 	    //blank the entire line                                                                                                                                         
 	    selector = ".upper > div:eq(" + y + ") > span";
 	}
-	var w = $(selector).length();
+	var w = $(selector).length;
 	$(selector).remove();
 	var blank_line = "";
 	var space = '<span style="background-color:'+background_color+'">&nbsp;</span>';
