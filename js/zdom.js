@@ -112,6 +112,21 @@ ZDOM = {
 	return old_color;
     }
     ,
+    'set_upper_char':function(x,y,character,style){
+	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
+	$(selector).text(character).css(style);
+    }
+    ,
+    'set_upper_space':function(x,y,style){
+	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
+	$(selector).html('&nbsp;').css(style);
+    }
+    ,
+    'set_upper_img':function(x,y,img){
+	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
+	$(selector).html(img);
+    }
+    ,
     'add_status_line':function(){
 	$(".screen").append('<div class="status" style="font-family:monospace;background-color:black;color:white">' +
                                 '<span style="float:left">&nbsp;</span>'+

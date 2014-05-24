@@ -365,30 +365,31 @@ ZScreen = {
 	    while (i < string.length) {
 		character = string.charAt(i);
 		i++;
-		var selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ") > span:eq("+ ZScreen.upper_cursor.x + ")";
+		var x = ZScreen.upper_cursor.x;
+		var y = ZScreen.upper_cursor.y;
 		if ((ZScreen.font) == 3 && (character.charCodeAt(0) >= 32) && (character.charCodeAt(0) <= 126)) {
 		    var img = ZGIF.get_font_3_img(character.charCodeAt(0),
 						  ZScreen.mono_width,ZScreen.mono_height,
 						  style['background-color'],style['color']);
-		    $(selector).html(img);
-		    if ( ZScreen.upper_cursor.x + 1 < ZScreen.width ) {
+		    ZDOM.set_upper_img(x,y,img);
+		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
 		} else if (character == ' ') {
-		    $(selector).html("&nbsp;").css(style);
-		    if ( ZScreen.upper_cursor.x + 1 < ZScreen.width ) {
+		    ZDOM.set_upper_space(x,y,style);
+		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
 		} else if (character == '\n') {
-		    if ( ZScreen.upper_cursor.y + 1 < ZScreen.cur_upper_lines) {
+		    if ( y + 1 < ZScreen.cur_upper_lines) {
 			ZScreen.upper_cursor.x = 0;
 			ZScreen.upper_cursor.y++;
 		    }
 		} else if (character == '\t') {
 		    ZError.die("print_char tab to upper window");
 		} else {
-		    $(selector).text(character).css(style);
-		    if ( ZScreen.upper_cursor.x + 1 < ZScreen.width ) {
+		    ZDOM.set_upper_char(x,y,character,style);
+		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
 		}
