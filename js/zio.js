@@ -130,6 +130,7 @@ ZIO = {
 	    ZIO.read_parse = parse;
 	    ZIO.input_buffer = [];
 	    ZIO.read_ready = true;
+	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    //TODO also deal with max chars and previous text?
@@ -163,6 +164,7 @@ ZIO = {
 	    ZIO.read_parse = parse;
 	    ZIO.input_buffer = [];
 	    ZIO.read_ready = true;
+	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    ZIO.read_timer = setTimeout(function(){ZIO.read_timeout(time,routine)},time*100);
@@ -204,6 +206,7 @@ ZIO = {
 	    return 0;
 	} else {
 	    //read from screen asyncronously
+	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    ZIO.read_char_ready = true;
@@ -218,6 +221,7 @@ ZIO = {
 	    if (abort) {
 		ZIO.end_read_char(0);
 	    } else {
+		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
 		ZScreen.scroll_to_bottom();
 		ZIO.read_char_timer = setTimeout(function(){ZIO.read_char_timeout(time,routine)},time*100);
@@ -233,6 +237,7 @@ ZIO = {
 		ZIO.end_read();
 	    } else {
 		//TODO if the there has been printing, reprint input.
+		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
 		ZScreen.scroll_to_bottom();
 		ZIO.read_timer = setTimeout(function(){ZIO.read_timeout(time,routine)},time*100);
@@ -246,6 +251,7 @@ ZIO = {
 	    return 0;
 	} else {
 	    //read from screen asyncronously
+	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    ZIO.read_char_ready = true;

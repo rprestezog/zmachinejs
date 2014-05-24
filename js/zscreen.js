@@ -9,6 +9,8 @@ ZScreen = {
     ,
     'dom_upper_lines':null
     ,
+    'max_upper_lines':null
+    ,
     'seen_upper_lines':null
     ,
     'mono_width':null
@@ -70,6 +72,7 @@ ZScreen = {
 	}
 	ZScreen.cur_upper_lines = 0;
 	ZScreen.dom_upper_lines = 0;
+	ZScreen.max_upper_lines = 0;
 	ZScreen.seen_upper_lines = 0;
 	if (ver >= 3) {
 	    ZDOM.add_upper_window();
@@ -91,11 +94,29 @@ ZScreen = {
 	}
     }
     ,
-    'shrink_upper_window':function(){
+    'see_upper_window':function(){
+	//call this when we know that the upper window has been seen
+	//that is, right before read or read char
+	
+	//first do a last minute trim
+	ZScreen.trim_upper_window();
+	//then set that we've seen the lines in the dom
+	ZScreen.seen_upper_lines = ZScreen.dom_upper_lines;
+	//and a new high water mark next time
+	ZScreen.max_upper_lines = ZScreen.cur_upper_lines;
+    }
+    ,
+    'trim_upper_window':function(){
 	//call this function to let the upper window catch up to its current size
-	//TODO trim rows off of dom
-	//set seen height
-	//set 
+	if (ZScreen.seen_upper_lines >= ZScreen.max_upper_lines) {
+	    if (ZScreen.dom_upper_lines > ZScreen.max_upper_lines) {
+		while (ZScreen.dom_upper_lines > ZScreen.max_upper_lines) {
+		    ZDOM.remove_upper_line();
+		    ZScreen.dom_upper_lines--;
+		}
+		ZScreen.resize_lower_window();
+	    }
+	}
     }
     ,
     'erase_window':function(window){
@@ -105,6 +126,7 @@ ZScreen = {
 	    //have any quote box text erased for the lower window
 	    ZScreen.cur_upper_lines = 0;
 	    ZScreen.dom_upper_lines = 0;
+	    ZScreen.max_upper_lines = 0;
 	    ZScreen.seen_upper_lines = 0;
 	    $(".upper").empty();
 	    $(".lower").empty().css("background-color",ZScreen.background).append('<span class="cursor" '+
@@ -152,9 +174,10 @@ ZScreen = {
 	ZScreen.hide_cursor();
 	if (lines == 0) {
 	    $(".upper").empty();
-	    //TODO delay removing lines
+	    //TODO delay removing lines?
 	    ZScreen.cur_upper_lines = 0;
 	    ZScreen.dom_upper_lines = 0;
+	    ZScreen.max_upper_lines = 0;
 	    ZScreen.seen_upper_lines = 0;
 	    ZScreen.window = 'lower';
 	} else {
@@ -163,25 +186,32 @@ ZScreen = {
 		$(".upper").empty();
 		ZScreen.cur_upper_lines = 0;
 		ZScreen.dom_upper_lines = 0;
+		ZScreen.max_upper_lines = 0;
 		ZScreen.seen_upper_lines = 0;
 	    }
 
-	    //TODO first make this more surgical (erase line n type commands)
-	    //TODO then change it to do lazy widow shrinkage
-	    while (ZScreen.dom_upper_lines < lines) {
-		ZDOM.add_upper_line(ZScreen.width,ZScreen.background);
-		ZScreen.dom_upper_lines++;
-		ZScreen.cur_upper_lines++;
+	    while (ZScreen.cur_upper_lines < lines) {
+		if (ZScreen.cur_upper_lines < ZScreen.dom_upper_lines) {
+		    ZDOM.erase_upper_line(0,ZScreen.cur_upper_lines,ZScreen.background);
+		    ZScreen.cur_upper_lines++;
+		} else {
+		    ZDOM.add_upper_line(ZScreen.width,ZScreen.background);
+		    ZScreen.dom_upper_lines++;
+		    ZScreen.cur_upper_lines++;
+		}
 	    }
-	    while (ZScreen.dom_upper_lines > lines) {
-		ZDOM.remove_upper_line();
-		ZScreen.dom_upper_lines--;
-		ZScreen.cur_upper_lines--;
+	    ZScreen.cur_upper_lines = lines;
+	    if (ZScreen.max_upper_lines < ZScreen.cur_upper_lines) {
+		ZScreen.max_upper_lines = ZScreen.cur_upper_lines;
 	    }
+	    //TODO change it to do lazy widow shrinkage
 	    if (ZScreen.upper_cursor.y >= lines) {
 		ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    }
+	    //ZError.log(ZScreen.cur_upper_lines);
+	    //ZError.log(ZScreen.dom_upper_lines);
 	}
+	ZScreen.trim_upper_window();
 	ZScreen.resize_lower_window();
     }
     ,
