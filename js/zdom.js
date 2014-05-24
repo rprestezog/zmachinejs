@@ -43,8 +43,48 @@ ZDOM = {
 	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
     }
     ,
+    'set_lower_height':function(h){
+	$(".screen > .lower").height(h);
+    }
+    ,
     'add_upper_window':function(){
 	$(".screen").append('<div class="upper" style="font-family:monospace"></div>');
+    }
+    ,
+    'remove_upper_line':function(){
+	$(".upper > div:last").remove();
+    }
+    ,
+    'add_upper_line':function(width,background_color){
+	var blank_line = "";
+	var space = '<span style="background-color:'+background_color+'">&nbsp;</span>';
+	var w = width;
+	while (w > 0) {
+	    blank_line += space;
+	    w--;
+	}
+	$(".screen > .upper").append("<div>" + blank_line + "</div>");
+    }
+    ,
+    'erase_upper_line':function(x,y,background_color){
+	var selector;
+	if (x > 0) {
+	    //blank to the end line the line                                                                                                                                
+	    selector = ".upper > div:eq(" + y + ") > span:gt("+ x - 1 + ")";
+	} else {
+	    //blank the entire line                                                                                                                                         
+	    selector = ".upper > div:eq(" + y + ") > span";
+	}
+	var w = $(selector).length();
+	$(selector).remove();
+	var blank_line = "";
+	var space = '<span style="background-color:'+background_color+'">&nbsp;</span>';
+	while (w > 0) {
+	    blank_line += space;
+	    w--;
+	}
+	var div_selector = ".upper > div:eq(" + y + ")";
+	$(div_selector).append(blank_line);
     }
     ,
     'add_status_line':function(){

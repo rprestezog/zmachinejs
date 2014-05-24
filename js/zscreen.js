@@ -3,6 +3,14 @@ ZScreen = {
     ,
     'height':null
     ,
+    'status_line':null
+    ,
+    'cur_upper_lines':null
+    ,
+    'dom_upper_lines':null
+    ,
+    'seen_upper_lines':null
+    ,
     'mono_width':null
     ,
     'mono_height':null
@@ -56,7 +64,13 @@ ZScreen = {
 	var ver = ZHeader.version();
 	if (ver <= 3) {
 	    ZDOM.add_status_line();
+	    ZScreen.status_line = 1;
+	} else {
+	    ZScreen.status_line = 0;
 	}
+	ZScreen.cur_upper_lines = 0;
+	ZScreen.dom_upper_lines = 0;
+	ZScreen.seen_upper_lines = 0;
 	if (ver >= 3) {
 	    ZDOM.add_upper_window();
 	}
@@ -67,19 +81,32 @@ ZScreen = {
     }
     ,
     'resize_lower_window':function(){
-	var status_line = $(".screen > .status").length;
-	var upper_lines = $(".screen > .upper > div").length;
+	var status_line = ZScreen.status_line;
+	var upper_lines = ZScreen.dom_upper_lines;
 	var lines_left = ZScreen.height - status_line - upper_lines;
 	if (lines_left > 0) {
-	    $(".lower").height(lines_left * ZScreen.mono_height);	    
+	    ZDOM.set_lower_height(lines_left * ZScreen.mono_height);
 	} else {
-	    $(".lower").height(0);
+	    ZDOM.set_lower_height(0);
 	}
+    }
+    ,
+    'shrink_upper_window':function(){
+	//call this function to let the upper window catch up to its current size
+	//TODO trim rows off of dom
+	//set seen height
+	//set 
     }
     ,
     'erase_window':function(window){
 	if (window == -1) {
-	    $(".upper").empty().css("background-color",ZScreen.background);
+	    //we postpone collapsing the upper window until next turn?
+	    //I think we don't in this case, as correct behavior would
+	    //have any quote box text erased for the lower window
+	    ZScreen.cur_upper_lines = 0;
+	    ZScreen.dom_upper_lines = 0;
+	    ZScreen.seen_upper_lines = 0;
+	    $(".upper").empty();
 	    $(".lower").empty().css("background-color",ZScreen.background).append('<span class="cursor" '+
 			'style="background-color:'+ZScreen.background+';font-family:monospace" >&nbsp;</span>');
 	    ZScreen.window = 'lower';
@@ -92,14 +119,11 @@ ZScreen = {
 	    //TODO move cursor to bottom left for version 4
 	} else if (window == 1) {
 	    ZScreen.hide_cursor();
-	    var blank_line = "";
-	    var w = ZScreen.width;
-	    while (w > 0) {
-		blank_line += "<span>&nbsp;</span>";
-		w--;
+	    var y = ZScreen.cur_upper_lines;
+	    while (y > 0) {
+		ZDOM.erase_upper_line(0,y - 1,ZScreen.background);
+		y--;
 	    }
-	    $(".upper").css("background-color",ZScreen.background);
-	    $(".upper > div").html( blank_line );
 	} else {
 	    ZError.die("TODO: erase_window" + window);
 	}
@@ -108,25 +132,7 @@ ZScreen = {
     'erase_line':function(){
 	if (ZScreen.window == 'upper') {
 	    ZScreen.hide_cursor();
-	    var selector;
-	    var w;
-	    if (ZScreen.upper_cursor.x > 0) {
-		//blank to the end line the line
-		selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ") > span:gt("+ ZScreen.upper_cursor.x - 1 + ")";
-		w = ZScreen.width - ZScreen.upper_cursor.x;
-	    } else {
-		//blank the entire line
-		selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ") > span";
-		w = ZScreen.width;
-	    }
-	    $(selector).remove();
-	    var blank_line = "";
-	    while (w > 0) {
-		blank_line += "<span>&nbsp;</span>";
-		w--;
-	    }
-	    var div_selector = ".upper > div:eq(" + ZScreen.upper_cursor.y + ")";
-	    $(div_selector).append(blank_line);
+	    ZDOM.erase_upper_line(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,ZScreen.background);
 	}
     }
     ,
@@ -146,32 +152,35 @@ ZScreen = {
 	ZScreen.hide_cursor();
 	if (lines == 0) {
 	    $(".upper").empty();
+	    //TODO delay removing lines
+	    ZScreen.cur_upper_lines = 0;
+	    ZScreen.dom_upper_lines = 0;
+	    ZScreen.seen_upper_lines = 0;
 	    ZScreen.window = 'lower';
 	} else {
 	    var ver = ZHeader.version();
 	    if (ver == 3) {
 		$(".upper").empty();
+		ZScreen.cur_upper_lines = 0;
+		ZScreen.dom_upper_lines = 0;
+		ZScreen.seen_upper_lines = 0;
 	    }
-	    var n = $(".upper > div").length;
-	    while (n < lines) {
-		//TODO fixed width whole line of nbsp's or to take from the lower window?
-		var blank_line = "";
-		var w = ZScreen.width;
-		while (w > 0) {
-		    blank_line += "<span>&nbsp;</span>";
-		    w--;
-		}
-		$(".upper").append("<div>" + blank_line + "</div>");
-		n++;
+
+	    //TODO first make this more surgical (erase line n type commands)
+	    //TODO then change it to do lazy widow shrinkage
+	    while (ZScreen.dom_upper_lines < lines) {
+		ZDOM.add_upper_line(ZScreen.width,ZScreen.background);
+		ZScreen.dom_upper_lines++;
+		ZScreen.cur_upper_lines++;
 	    }
-	    while (n > lines) {
-		$(".upper > div:last").remove();
-		n--;
+	    while (ZScreen.dom_upper_lines > lines) {
+		ZDOM.remove_upper_line();
+		ZScreen.dom_upper_lines--;
+		ZScreen.cur_upper_lines--;
 	    }
 	    if (ZScreen.upper_cursor.y >= lines) {
 		ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    }
-	    var n2 = $(".upper > div").length;
 	}
 	ZScreen.resize_lower_window();
     }
@@ -348,7 +357,7 @@ ZScreen = {
 			ZScreen.upper_cursor.x++;
 		    }
 		} else if (character == '\n') {
-		    if ( ZScreen.upper_cursor.y + 1 < $(".upper > div").length) {
+		    if ( ZScreen.upper_cursor.y + 1 < ZScreen.cur_upper_lines) {
 			ZScreen.upper_cursor.x = 0;
 			ZScreen.upper_cursor.y++;
 		    }
