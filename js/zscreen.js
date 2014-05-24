@@ -399,13 +399,13 @@ ZScreen = {
 		var img = ZGIF.get_font_3_img(string.charCodeAt(0),
 					      ZScreen.mono_width,ZScreen.mono_height,
 					      style['background-color'],style['color']);
-		$("<span></span>").html(img).insertBefore(".lower > .cursor");
+		ZDOM.print_lower_img(img);
 	    } else if (string == '\n') {
-		$(".lower > .cursor").before("<br/>");
+		ZDOM.print_lower_newline();
 	    } else if (string == ' ') {
-		$("<span>&nbsp;</span>").css(style).insertBefore(".lower > .cursor");
+		ZDOM.print_lower_space(style);
 	    } else {
-		$("<span></span>").text(string).css(style).insertBefore(".lower > .cursor");
+		ZDOM.print_lower_string(string, style);
 	    }
 	} else {
 	    if (ZScreen.font == 3) {
@@ -417,7 +417,7 @@ ZScreen = {
 		if (first_line) {
 		    first_line = false;
 		} else {
-		    $(".lower > .cursor").before("<br/>");
+		    ZDOM.print_lower_newline();
 		}
 		var line = lines.shift();
 		if (style['font-family'] == 'monospace') {
@@ -427,15 +427,15 @@ ZScreen = {
 			if (first_word) {
 			    first_word = false;
 			} else {
-			    $("<span>&nbsp;</span>").css(style).insertBefore(".lower > .cursor");
+			    ZDOM.print_lower_space(style);
 			}
 			var word = words.shift();
 			if (word.length > 0) {
-			    $("<span></span>").text(word).css(style).insertBefore(".lower > .cursor");
+			    ZDOM.print_lower_string(word, style);
 			}
 		    }
 		} else {
-		    $("<span></span>").text(line).css(style).insertBefore(".lower > .cursor");
+		    ZDOM.print_lower_string(line, style);
 		}
 	    }
 	}

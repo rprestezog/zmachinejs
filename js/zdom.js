@@ -57,6 +57,22 @@ ZDOM = {
 	$(".screen > .lower > .cursor").css("background-color",background_color);
     }
     ,
+    'print_lower_string':function(string,style){
+	$("<span></span>").text(string).css(style).insertBefore(".lower > .cursor");
+    }
+    ,
+    'print_lower_space':function(style){
+	$("<span>&nbsp;</span>").css(style).insertBefore(".lower > .cursor");
+    }
+    ,
+    'print_lower_img':function(img){
+	$("<span></span>").html(img).insertBefore(".lower > .cursor");
+    }
+    ,
+    'print_lower_newline':function(){
+	$("<br/>").insertBefore(".lower > .cursor");
+    }
+    ,
     'set_lower_height':function(h){
 	$(".screen > .lower").height(h);
     }
