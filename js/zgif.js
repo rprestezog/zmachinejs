@@ -1,13 +1,13 @@
 ZGIF = {
-    //this library will take a length 64 array of bits and produce an 8 by 8 pixel base64 encoded GIF
+    //this set of functions let's us take a font 3 character code and a foreground 
+    //and produce an 8 by 8 pixel base64 encoded transparent GIF
     //using a data URI scheme
-    //TODO, make this return a transparent gif with the foreground color and let the DOM set the background (like it does for most text)
-    'get_font_3_URI':function(code,background,foreground) {
-	var back_rgb = ZGIF.get_rgb(background);
+    'get_font_3_URI':function(code,foreground) {
 	var fore_rgb = ZGIF.get_rgb(foreground);
 	var bit_array = ZGIF.get_font_3_bit_array(code);
-	var b64gif = ZGIF.bit_array_to_gif(bit_array,back_rgb[0],back_rgb[1],back_rgb[2],fore_rgb[0],fore_rgb[1],fore_rgb[2]);
-	var URI = 'data:image/gif;base64,' + b64gif;
+	var gif = ZGIF.bit_array_to_gif(bit_array,fore_rgb[0],fore_rgb[1],fore_rgb[2]);
+	var base64_gif = ZGIF.base64_encode(gif);
+	var URI = 'data:image/gif;base64,' + base64_gif;
 	return URI;
     }
     ,
@@ -32,6 +32,72 @@ ZGIF = {
 	    ZError.log('get_rgb color: ' + color);
 	    return [128,128,128];
 	}
+    }
+    ,
+    'bit_array_to_gif':function(b,fore_r,fore_g,fore_b) {	
+	var gif = [71, 73, 70, 56, 57, 97,       //GIF89a
+		   8,0, //width (8)
+		   8,0, //height (8)
+		   128 +64+32+16,  //Global Color Map, 8bit color, 2 color pallete
+		   0,   //background
+		   0,
+		   0,0,0, //background color would go here, if it wasn't going to be transparent
+		   fore_r,fore_g,fore_b, //foreground
+		   0x21, //introducing an Graphic Control Extension
+		   0xF9, //label
+		   4, //block size
+		   1, //no disposal, no input, yes transparency
+		   0,0, //no delay
+		   0, //zero is the transparent color
+		   0, //last block of the Graphic Control Extension
+		   44, //comma, the image introducer
+		   0,0,0,0, //upper left
+		   8,0,8,0, //8 by 8 pixels
+		   0, //no local color table
+		   3, //LZW min code size
+		   41, //41 bytes of image data 4/3
+		   8+(b[0]<<4),b[1]+(b[2]<<4),b[3]+(8<<4),b[4]+(b[5]<<4),b[6]+(b[7]<<4), //row
+		   8+(b[8]<<4),b[9]+(b[10]<<4),b[11]+(8<<4),b[12]+(b[13]<<4),b[14]+(b[15]<<4), //row
+		   8+(b[16]<<4),b[17]+(b[18]<<4),b[19]+(8<<4),b[20]+(b[21]<<4),b[22]+(b[23]<<4), //row
+		   8+(b[24]<<4),b[25]+(b[26]<<4),b[27]+(8<<4),b[28]+(b[29]<<4),b[30]+(b[31]<<4), //row
+		   8+(b[32]<<4),b[33]+(b[34]<<4),b[35]+(8<<4),b[36]+(b[37]<<4),b[38]+(b[39]<<4), //row
+		   8+(b[40]<<4),b[41]+(b[42]<<4),b[43]+(8<<4),b[44]+(b[45]<<4),b[46]+(b[47]<<4), //row
+		   8+(b[48]<<4),b[49]+(b[50]<<4),b[51]+(8<<4),b[52]+(b[53]<<4),b[54]+(b[55]<<4), //row
+		   8+(b[56]<<4),b[57]+(b[58]<<4),b[59]+(8<<4),b[60]+(b[61]<<4),b[62]+(b[63]<<4), //row
+		   0x98, // 8 (clear, end)
+		   0, //last block
+		   59]; //semicolon
+	return gif;
+    }
+    ,
+    'base64_encode':function(bytes){
+	var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	var code = '';
+	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	var i = 0;
+	while (i < bytes.length) {
+	    var three_bytes = bytes[i] << 16;
+	    i++;
+	    code += map.charAt((three_bytes >> 18) & 63);
+      	    if (i < bytes.length) {
+		three_bytes += (bytes[i] << 8);		
+		i++;
+		code += map.charAt((three_bytes >> 12) & 63);
+		if (i < bytes.length) {
+		    three_bytes += bytes[i];
+		    i++;
+		    code += map.charAt((three_bytes >> 6) & 63);
+		    code += map.charAt(three_bytes & 63);
+		} else {
+		    code += map.charAt((three_bytes >> 6) & 63);
+		    code += '=';
+		}
+	    } else {
+		code += map.charAt((three_bytes >> 12) & 63);
+		code += '==';
+	    }
+	}
+	return code;
     }
     ,
     'get_font_3_bit_array':function(code) {
@@ -901,65 +967,5 @@ ZGIF = {
 		    0,1,1,1,1,1,1,0,
 		    0,0,0,0,0,0,0,0];
 	}
-    }
-    ,
-    'bit_array_to_gif':function(b,back_r,back_g,back_b,fore_r,fore_g,fore_b) {	
-	var gif = [71, 73, 70, 56, 57, 97,       //GIF89a
-		   8,0, //width (8)
-		   8,0, //height (8)
-		   128 +64+32+16,  //Global Color Map, 8bit color, 2 color pallete
-		   0,   //background
-		   0,
-		   back_r,back_g,back_b, //background
-		   fore_r,fore_g,fore_b, //foreground
-		   44, //comma
-		   0,0,0,0, //upper left
-		   8,0,8,0, //8 by 8 pixels
-		   0, //no local color table
-		   3, //LZW min code size
-		   41, //41 bytes of image data 4/3
-		   8+(b[0]<<4),b[1]+(b[2]<<4),b[3]+(8<<4),b[4]+(b[5]<<4),b[6]+(b[7]<<4), //row
-		   8+(b[8]<<4),b[9]+(b[10]<<4),b[11]+(8<<4),b[12]+(b[13]<<4),b[14]+(b[15]<<4), //row
-		   8+(b[16]<<4),b[17]+(b[18]<<4),b[19]+(8<<4),b[20]+(b[21]<<4),b[22]+(b[23]<<4), //row
-		   8+(b[24]<<4),b[25]+(b[26]<<4),b[27]+(8<<4),b[28]+(b[29]<<4),b[30]+(b[31]<<4), //row
-		   8+(b[32]<<4),b[33]+(b[34]<<4),b[35]+(8<<4),b[36]+(b[37]<<4),b[38]+(b[39]<<4), //row
-		   8+(b[40]<<4),b[41]+(b[42]<<4),b[43]+(8<<4),b[44]+(b[45]<<4),b[46]+(b[47]<<4), //row
-		   8+(b[48]<<4),b[49]+(b[50]<<4),b[51]+(8<<4),b[52]+(b[53]<<4),b[54]+(b[55]<<4), //row
-		   8+(b[56]<<4),b[57]+(b[58]<<4),b[59]+(8<<4),b[60]+(b[61]<<4),b[62]+(b[63]<<4), //row
-		   0x98, // 8 (clear, end)
-		   0, //last block
-		   59]; //semicolon
-	var base64_gif = ZGIF.base64_encode(gif);
-	return base64_gif;
-    }
-    ,
-    'base64_encode':function(bytes){
-	var map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-	var code = '';
-	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-	var i = 0;
-	while (i < bytes.length) {
-	    var three_bytes = bytes[i] << 16;
-	    i++;
-	    code += map.charAt((three_bytes >> 18) & 63);
-      	    if (i < bytes.length) {
-		three_bytes += (bytes[i] << 8);		
-		i++;
-		code += map.charAt((three_bytes >> 12) & 63);
-		if (i < bytes.length) {
-		    three_bytes += bytes[i];
-		    i++;
-		    code += map.charAt((three_bytes >> 6) & 63);
-		    code += map.charAt(three_bytes & 63);
-		} else {
-		    code += map.charAt((three_bytes >> 6) & 63);
-		    code += '=';
-		}
-	    } else {
-		code += map.charAt((three_bytes >> 12) & 63);
-		code += '==';
-	    }
-	}
-	return code;
     }
 };

@@ -114,10 +114,10 @@ ZDOM = {
 	$(".lower > .cursor").prev().remove();
     }
     ,
-    'print_lower_img':function(URI){
+    'print_lower_img':function(URI,background_color){
 	//TODO should we be using monospace width and height here?
 	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + ZDOM.mono_width + ';height:' + ZDOM.mono_height + '" />';
-	$("<span></span>").html(img).insertBefore(".lower > .cursor");
+	$("<span></span>").css('background-color',background_color).html(img).insertBefore(".lower > .cursor");
     }
     ,
     'print_lower_newline':function(){
@@ -185,10 +185,10 @@ ZDOM = {
 	$(selector).html('&nbsp;').css(style);
     }
     ,
-    'set_upper_img':function(x,y,URI){
+    'set_upper_img':function(x,y,URI,background_color){
 	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + ZDOM.mono_width + ';height:' + ZDOM.mono_height + '" />';
 	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
-	$(selector).html(img);
+	$(selector).css('background-color',background_color).html(img);
     }
     ,
     'add_status_line':function(){

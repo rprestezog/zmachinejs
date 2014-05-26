@@ -356,8 +356,8 @@ ZScreen = {
 		var x = ZScreen.upper_cursor.x;
 		var y = ZScreen.upper_cursor.y;
 		if ((ZScreen.font) == 3 && (character.charCodeAt(0) >= 32) && (character.charCodeAt(0) <= 126)) {
-		    var URI = ZGIF.get_font_3_URI(character.charCodeAt(0),style['background-color'],style['color']);
-		    ZDOM.set_upper_img(x,y,URI);
+		    var URI = ZGIF.get_font_3_URI(character.charCodeAt(0),style['color']);
+		    ZDOM.set_upper_img(x,y,URI,style['background-color']);
 		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
@@ -382,8 +382,8 @@ ZScreen = {
 	    }
 	} else if (string.length == 1) {
 	    if ((ZScreen.font) == 3 && (string.charCodeAt(0) >= 32) && (string.charCodeAt(0) <= 126)) {
-		var URI = ZGIF.get_font_3_URI(string.charCodeAt(0),style['background-color'],style['color']);
-		ZDOM.print_lower_img(URI);
+		var URI = ZGIF.get_font_3_URI(string.charCodeAt(0),style['color']);
+		ZDOM.print_lower_img(URI,style['background-color']);
 	    } else if (string == '\n') {
 		ZDOM.print_lower_newline();
 	    } else if (string == ' ') {
