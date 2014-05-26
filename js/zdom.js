@@ -2,6 +2,10 @@ ZDOM = {
     // This file will isolate all of the functions which touch the DOM
     // The idea here is that if I wanted to switch from jquery to something else
     // I'd only have to mess with this file.
+    'mono_width':null
+    ,
+    'mono_height':null
+    ,
     'init_body':function(){
         //TODO stop breaking back button
         //maybe something like
@@ -12,6 +16,7 @@ ZDOM = {
         $("body").append('<div class = "screen"></div>');
         $("body").append('<div class = "error"></div>');
         $(".error").css("color","red");
+	ZDOM.init_monospace_size();
     }
     ,
     'clear_screen':function(){
@@ -19,37 +24,40 @@ ZDOM = {
     }
     ,
     'set_screen_size':function(width,height){
-	$(".screen").width(width).height(height);
+	$(".screen").width(width*ZDOM.mono_width).height(height*ZDOM.mono_height);
     }
     ,
     'get_body_size':function(){
-	var body_width = $("body").width();
-	var body_height = $("body").height();
+	var body_width = Math.floor($("body").width() / ZDOM.mono_width);
+	var body_height = Math.floor($("body").height() / ZDOM.mono_height);
 	return {'width': body_width,
                 'height': body_height};
     }
     ,
-    'get_monospace_size':function(){
+    'init_monospace_size':function(){
 	$(".screen").append('<div class="mono" style="font-family:monospace"><span>&nbsp;</span></div>');
 	var mono_width = $(".screen > .mono > span").width();
 	var mono_height = $(".screen > .mono > span").height();
 	$(".screen > .mono").remove();
-
-	return {'width': mono_width,
-		'height': mono_height};
+	ZDOM.mono_width = mono_width;
+	ZDOM.mono_height = mono_height;
     }
     ,
     'add_lower_window':function(){
 	$(".screen").append('<div class="lower" style="overflow:hidden" ></div>');
     }
     ,
-     'set_lower_height':function(h){
-	$(".screen > .lower").height(h);
+    'set_lower_height':function(lines){
+	$(".screen > .lower").height(lines*ZDOM.mono_height);
     }
     ,
-    'scroll_lower': function(amount) {
+    'scroll_lower_lines': function(lines) {
+        amount = lines*ZDOM.mono_height;
+	ZDOM.scroll_lower_window(amount);
+    }
+    ,
+    'scroll_lower_window': function(amount) {
         var pos;
-        amount = Math.round(amount);
         if ($(".lower").prop) {
             if (amount > $(".lower").prop('scrollTop') && amount > 0) {
                 $(".lower").prop('scrollTop', 0);
@@ -72,12 +80,12 @@ ZDOM = {
     ,
     'page_up':function() {
         var h = $(".lower").height();
-        ZDOM.scroll_lower(-h);
+        ZDOM.scroll_lower_window(-h);
     }
     ,
     'page_down':function() {
         var h = $(".lower").height();
-        ZDOM.scroll_lower(h);
+        ZDOM.scroll_lower_window(h);
     }
     ,
     'clear_lower_window':function(background_color){
@@ -106,9 +114,9 @@ ZDOM = {
 	$(".lower > .cursor").prev().remove();
     }
     ,
-    'print_lower_img':function(URI,width,height){
-	//TODO do we need width and height here?
-	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + width + ';height:' + height + '" />';
+    'print_lower_img':function(URI){
+	//TODO should we be using monospace width and height here?
+	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + ZDOM.mono_width + ';height:' + ZDOM.mono_height + '" />';
 	$("<span></span>").html(img).insertBefore(".lower > .cursor");
     }
     ,
@@ -177,8 +185,8 @@ ZDOM = {
 	$(selector).html('&nbsp;').css(style);
     }
     ,
-    'set_upper_img':function(x,y,URI,width,height){
-	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + width + ';height:' + height + '" />';
+    'set_upper_img':function(x,y,URI){
+	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + ZDOM.mono_width + ';height:' + ZDOM.mono_height + '" />';
 	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
 	$(selector).html(img);
     }

@@ -13,11 +13,6 @@ ZScreen = {
     ,
     'seen_upper_lines':null
     ,
-    //TODO move these to ZDOM?
-    'mono_width':null
-    ,
-    'mono_height':null
-    ,
     'window':null
     ,
     'style':null
@@ -32,16 +27,8 @@ ZScreen = {
     ,
     'init_screen':function(){
 	var body_size = ZDOM.get_body_size();
-	var body_width = body_size.width;
-	var body_height = body_size.height;
-	var mono_size = ZDOM.get_monospace_size();
-	var mono_width = mono_size.width;
-	var mono_height = mono_size.height;
-	ZScreen.mono_width = mono_width;
-	ZScreen.mono_height = mono_height;
-	//pick a screen width (in monospace characters)
-	var max_width = Math.floor(body_width / mono_width);
-	var max_height = Math.floor(body_height / mono_height);
+	var max_width = body_size.width;
+	var max_height = body_size.height;
 	if (max_width < 60 || max_height < 15) {
 	    ZScreen.width = 60;
 	    ZScreen.height = 15;
@@ -60,7 +47,7 @@ ZScreen = {
 	//now start for real
 	
 	ZDOM.clear_screen();
-	ZDOM.set_screen_size(ZScreen.width*mono_width,ZScreen.height*mono_height);
+	ZDOM.set_screen_size(ZScreen.width,ZScreen.height);
 	ZHeader.set_screen_size(ZScreen.width,ZScreen.height);
 	ZScreen.set_colour(1,1);
 	//The header sets default text to black on white. Should this be done here?
@@ -89,7 +76,7 @@ ZScreen = {
 	var upper_lines = ZScreen.dom_upper_lines;
 	var lines_left = ZScreen.height - status_line - upper_lines;
 	if (lines_left > 0) {
-	    ZDOM.set_lower_height(lines_left * ZScreen.mono_height);
+	    ZDOM.set_lower_height(lines_left);
 	} else {
 	    ZDOM.set_lower_height(0);
 	}
@@ -370,7 +357,7 @@ ZScreen = {
 		var y = ZScreen.upper_cursor.y;
 		if ((ZScreen.font) == 3 && (character.charCodeAt(0) >= 32) && (character.charCodeAt(0) <= 126)) {
 		    var URI = ZGIF.get_font_3_URI(character.charCodeAt(0),style['background-color'],style['color']);
-		    ZDOM.set_upper_img(x,y,URI,ZScreen.mono_width,ZScreen.mono_height);
+		    ZDOM.set_upper_img(x,y,URI);
 		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
@@ -396,7 +383,7 @@ ZScreen = {
 	} else if (string.length == 1) {
 	    if ((ZScreen.font) == 3 && (string.charCodeAt(0) >= 32) && (string.charCodeAt(0) <= 126)) {
 		var URI = ZGIF.get_font_3_URI(string.charCodeAt(0),style['background-color'],style['color']);
-		ZDOM.print_lower_img(URI,ZScreen.mono_width,ZScreen.mono_height);
+		ZDOM.print_lower_img(URI);
 	    } else if (string == '\n') {
 		ZDOM.print_lower_newline();
 	    } else if (string == ' ') {
@@ -457,11 +444,11 @@ ZScreen = {
     }
     ,
     'scroll_up':function() {
-	ZDOM.scroll_lower(-ZScreen.mono_height);
+	ZDOM.scroll_lower_lines(-1);
     }
     ,
     'scroll_down':function() {
-	ZDOM.scroll_lower(ZScreen.mono_height);
+	ZDOM.scroll_lower_lines(1);
     }
     ,
     'page_up':function() {
