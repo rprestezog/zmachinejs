@@ -106,7 +106,9 @@ ZDOM = {
 	$(".lower > .cursor").prev().remove();
     }
     ,
-    'print_lower_img':function(img){
+    'print_lower_img':function(URI,width,height){
+	//TODO do we need width and height here?
+	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + width + ';height:' + height + '" />';
 	$("<span></span>").html(img).insertBefore(".lower > .cursor");
     }
     ,
@@ -175,7 +177,8 @@ ZDOM = {
 	$(selector).html('&nbsp;').css(style);
     }
     ,
-    'set_upper_img':function(x,y,img){
+    'set_upper_img':function(x,y,URI,width,height){
+	var img = '<img src="' +URI+ '" style="vertical-align:top;width:' + width + ';height:' + height + '" />';
 	var selector = ".upper > div:eq(" + y + ") > span:eq("+ x + ")";
 	$(selector).html(img);
     }

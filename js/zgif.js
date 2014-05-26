@@ -1,14 +1,14 @@
 ZGIF = {
     //this library will take a length 64 array of bits and produce an 8 by 8 pixel base64 encoded GIF
-    'get_font_3_img':function(code,width,height,background,foreground) {
+    //using a data URI scheme
+    //TODO, make this return a transparent gif with the foreground color and let the DOM set the background (like it does for most text)
+    'get_font_3_URI':function(code,background,foreground) {
 	var back_rgb = ZGIF.get_rgb(background);
 	var fore_rgb = ZGIF.get_rgb(foreground);
 	var bit_array = ZGIF.get_font_3_bit_array(code);
 	var b64gif = ZGIF.bit_array_to_gif(bit_array,back_rgb[0],back_rgb[1],back_rgb[2],fore_rgb[0],fore_rgb[1],fore_rgb[2]);
-	var img = '<img name="'+ code +'" src="data:image/gif;base64,' + b64gif + '" ' +
-	'style="vertical-align:top;width:' + width + ';height:' + height + '" ' + 
- 	'/>';
-	return img;
+	var URI = 'data:image/gif;base64,' + b64gif;
+	return URI;
     }
     ,
     'get_rgb':function(color) {

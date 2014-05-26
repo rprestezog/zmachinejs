@@ -13,6 +13,7 @@ ZScreen = {
     ,
     'seen_upper_lines':null
     ,
+    //TODO move these to ZDOM?
     'mono_width':null
     ,
     'mono_height':null
@@ -368,10 +369,8 @@ ZScreen = {
 		var x = ZScreen.upper_cursor.x;
 		var y = ZScreen.upper_cursor.y;
 		if ((ZScreen.font) == 3 && (character.charCodeAt(0) >= 32) && (character.charCodeAt(0) <= 126)) {
-		    var img = ZGIF.get_font_3_img(character.charCodeAt(0),
-						  ZScreen.mono_width,ZScreen.mono_height,
-						  style['background-color'],style['color']);
-		    ZDOM.set_upper_img(x,y,img);
+		    var URI = ZGIF.get_font_3_URI(character.charCodeAt(0),style['background-color'],style['color']);
+		    ZDOM.set_upper_img(x,y,URI,ZScreen.mono_width,ZScreen.mono_height);
 		    if ( x + 1 < ZScreen.width ) {
 			ZScreen.upper_cursor.x++;
 		    }
@@ -396,10 +395,8 @@ ZScreen = {
 	    }
 	} else if (string.length == 1) {
 	    if ((ZScreen.font) == 3 && (string.charCodeAt(0) >= 32) && (string.charCodeAt(0) <= 126)) {
-		var img = ZGIF.get_font_3_img(string.charCodeAt(0),
-					      ZScreen.mono_width,ZScreen.mono_height,
-					      style['background-color'],style['color']);
-		ZDOM.print_lower_img(img);
+		var URI = ZGIF.get_font_3_URI(string.charCodeAt(0),style['background-color'],style['color']);
+		ZDOM.print_lower_img(URI,ZScreen.mono_width,ZScreen.mono_height);
 	    } else if (string == '\n') {
 		ZDOM.print_lower_newline();
 	    } else if (string == ' ') {
