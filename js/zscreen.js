@@ -424,6 +424,7 @@ ZScreen = {
 	    }
 	}
 	//ZScreen.scroll_to_bottom();
+	//TODO should we show cursor and scroll to bottom here?
     }
     ,
     'backspace':function(){

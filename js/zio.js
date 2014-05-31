@@ -412,7 +412,7 @@ ZIO = {
 		ZIO.end_read_char(27);
 	    }	
         } else {
-            //TODO function keys, and number pad
+            //TODO 1.0 function keys, and number pad 3.8.4
 	    //ZError.log('Key Down: ' + which);
         }
         return false; //prevents default and keypress

@@ -23,6 +23,7 @@ ZString = {
 			i++;
 			zscii = zscii.concat(ZString.get_abbrev(zchar2));
 		    } else {
+			//TODO 1.0 incomplete multibyte constructions are ok to print 3.6.1
 			ZError.die("Incomplete Z Char string");
 		    }
 		}		
@@ -231,6 +232,9 @@ ZString = {
 	} else if (zscii === 13) {
 	    return "\n";
 	} else if ((zscii >= 32) && (zscii <= 126)) {
+	    //TODO 1.0 zscii 96 should be a left quote, not a grave accent `
+	    //zscii 39 should be right quote, not neutral quote
+	    // http://www.cl.cam.ac.uk/~mgk25/ucs/quotes.html
 	    return String.fromCharCode(zscii);
 	} else if ((zscii >= 155) && (zscii <= 251)) {
 	    var extra_characters_table = ZString.get_extra_characters_table();
@@ -312,6 +316,8 @@ ZString = {
 	    }
 	    i++;
 	}
+	//TODO 1.0 For version 1 and 2, we need to use shift locks for runs of two or more from the same case 3.7.1
+	//this may require a bit of rewrite.
 	return zchars;
     }
 };
