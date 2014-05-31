@@ -68,6 +68,11 @@ ZHeader = {
 	return ZMemory.get_byte(0);
     }
     ,
+    'get_high_memory_addr':function(){
+	var addr = ZMemory.get_word(4);
+	return addr;
+    }
+    ,
     'get_initial_PC_addr':function(){
 	var addr = ZMemory.get_word(6);
 	if (ZHeader.version() == 6) {
@@ -89,6 +94,11 @@ ZHeader = {
     ,
     'get_global_table_addr':function(){
 	var addr = ZMemory.get_word(12);
+	return addr;
+    }
+    ,
+    'get_static_memory_addr':function(){
+	var addr = ZMemory.get_word(14);
 	return addr;
     }
     ,

@@ -3,6 +3,8 @@ ZMemory = {
     ,
     'file':null
     ,
+    'static_addr':null
+    ,
     'load_memory_from_file':function(url,callback){
 	//TODO move the file request stuff somewhere else, keep memory assignments here
 	var oReq = new XMLHttpRequest();
@@ -13,17 +15,10 @@ ZMemory = {
 		var arrayBuffer = oReq.response;
 		if (arrayBuffer) {
 		    var byteArray = new Uint8Array(arrayBuffer);
-		    ZMemory.memory = {};
-		    //TODO find a better way to do this copy.
-		    ZMemory.file = [];
-		    for (var i = 0; i < byteArray.byteLength; i++) {
-			ZMemory.file.push(byteArray[i]);
+		    var success = ZMemory.init(byteArray);
+		    if (success) {
+			callback();
 		    }
-		    //TODO some initialization
-		    //TODO 1.0 Check file length against version 1.1.4
-		    //and file length in header
-		    //run checksum?
-		    callback();
 		} else {
 		    ZError.die("Unexpected file at " + url);
 		} 
@@ -34,7 +29,23 @@ ZMemory = {
 	oReq.send(null);
     }
     ,
-    "get_byte":function(addr){
+    'init':function(byteArray){
+	ZMemory.memory = {};
+	ZMemory.file = [];
+	for (var i = 0; i < byteArray.length; i++) {
+	    ZMemory.file.push(byteArray[i]);
+	}
+	ZMemory.static_addr = ZHeader.get_static_memory_addr();
+	//check this is less than the file length and at least 64
+	//TODO some initialization
+	//TODO 1.0 Check file length against version 1.1.4
+	//and file length in header
+	//run checksum?
+	
+	return true;
+    }
+    ,
+    'get_byte':function(addr){
 	//TODO 1.0 forbid reading above static memory ($0ffff) 1.1.3 
 	//this is has to happen elsewhere, like loadb, loadw as this function is used for every read from memory (like PC reads)
 	if (addr >= 0 && addr < ZMemory.file.length) {
@@ -49,13 +60,13 @@ ZMemory = {
 	}
     }
     ,
-    "set_byte":function(addr,value){
+    'set_byte':function(addr,value){
 	//TODO 1.0 forbid writing to static memory 1.1.2
 	//TODO consider a mechanism for modules to be notified when a memory they are caching is dirtied.
 	//no caching currently happens, but I was tempted to cache things like
-	//the header, dictionary, and object trees.
+	//the header, alphabets, dictionary, and object trees.
 	//Things work great, this is likely premature optimization.
-	if (addr >= 0 && addr < ZMemory.file.length) {
+	if (addr >= 0 && addr < ZMemory.static_addr) {
 	    if (value >= 0  && value < 256) {
 		if (ZMemory.file[addr] == value) {
 		    delete ZMemory.memory[addr];
@@ -70,11 +81,11 @@ ZMemory = {
 	}
     }
     ,
-    "get_word":function(addr){
+    'get_word':function(addr){
 	return ((256*ZMemory.get_byte(addr)) + ZMemory.get_byte(addr+1));
     }
     ,
-    "set_word":function(addr,value){
+    'set_word':function(addr,value){
 	ZMemory.set_byte(addr, (value>>>8) & 255);
 	ZMemory.set_byte(addr+1, value & 255);
     }
