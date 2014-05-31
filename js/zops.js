@@ -161,7 +161,13 @@ ZOps = {
 	if (word_index >= 32768) {
 	    word_index -= 65536;
 	}
-	var result = ZMemory.get_word(array+(2*word_index));
+	var addr = array+(2*word_index);
+	if (addr > 65534) {
+	    ZError.die("loadw addr out of range:" + addr);
+	    ZState.store(0);
+	    return 1;
+	}
+	var result = ZMemory.get_word(addr);
 	ZState.store(result);
 	return 1;
     }
@@ -173,7 +179,13 @@ ZOps = {
 	if (byte_index >= 32768) {
 	    byte_index -= 65536;
 	}
-	var result = ZMemory.get_byte(array+byte_index);
+	var addr = array+byte_index;
+	if (addr > 65535) {
+	    ZError.die("loadb addr out of range:" + addr);
+	    ZState.store(0);
+	    return 1;
+	}
+	var result = ZMemory.get_byte(addr);
 	ZState.store(result);
 	return 1;
     }
@@ -182,8 +194,8 @@ ZOps = {
 	//get_prop
 	//2OP:17 11 get_prop object property -> (result)
 	//Read property from object (resulting in the default value if it had no such declared property). If the property has length 1, the value is only that byte. If it has length 2, the first two bytes of the property are taken as a word value. It is illegal for the opcode to be used if the property has length greater than 2, and the result is unspecified. 
-	var prop_addr = ZObject.get_prop(object,property);
-	ZState.store(prop_addr);
+	var prop = ZObject.get_prop(object,property);
+	ZState.store(prop);
 	return 1;
     }
     ,

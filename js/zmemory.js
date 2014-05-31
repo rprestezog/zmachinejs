@@ -6,7 +6,6 @@ ZMemory = {
     'static_addr':null
     ,
     'load_memory_from_file':function(url,callback){
-	//TODO move the file request stuff somewhere else, keep memory assignments here
 	var oReq = new XMLHttpRequest();
 	oReq.open("GET", url, true);
 	oReq.responseType = "arraybuffer";
@@ -35,19 +34,33 @@ ZMemory = {
 	for (var i = 0; i < byteArray.length; i++) {
 	    ZMemory.file.push(byteArray[i]);
 	}
+	var file_length = ZMemory.file.length;
+	var ver = ZHeader.version();
+	if (ver < 4) {
+	    if (file_length > 128*1024) {
+		ZError.die("file_length is too large! " + file_length);
+	    }
+	} else if (ver < 4) {
+	    if (file_length > 256*1024) {
+		ZError.die("file_length is too large! " + file_length);
+	    }
+	} else {
+	    if (file_length > 512*1024) {
+		ZError.die("file_length is too large! " + file_length);
+	    }
+	}
 	ZMemory.static_addr = ZHeader.get_static_memory_addr();
-	//check this is less than the file length and at least 64
-	//TODO some initialization
-	//TODO 1.0 Check file length against version 1.1.4
-	//and file length in header
-	//run checksum?
-	
+	if (ZMemory.static_addr < 64 ) {
+	    ZError.die("static_addr is too small! " + ZMemory.static_addr );
+	}
+	if (ZMemory.static_addr >= file_length) {
+	    ZError.die("static_addr is too large! " + ZMemory.static_addr );
+	}
+	var file_length = ZHeader.get_file_length();
 	return true;
     }
     ,
     'get_byte':function(addr){
-	//TODO 1.0 forbid reading above static memory ($0ffff) 1.1.3 
-	//this is has to happen elsewhere, like loadb, loadw as this function is used for every read from memory (like PC reads)
 	if (addr >= 0 && addr < ZMemory.file.length) {
 	    if (addr in ZMemory.memory) {
 		return ZMemory.memory[addr];
@@ -61,8 +74,7 @@ ZMemory = {
     }
     ,
     'set_byte':function(addr,value){
-	//TODO 1.0 forbid writing to static memory 1.1.2
-	//TODO consider a mechanism for modules to be notified when a memory they are caching is dirtied.
+	//TODO consider a mechanism for modules to be notified when memory they are caching is dirtied.
 	//no caching currently happens, but I was tempted to cache things like
 	//the header, alphabets, dictionary, and object trees.
 	//Things work great, this is likely premature optimization.
