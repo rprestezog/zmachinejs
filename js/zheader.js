@@ -45,7 +45,7 @@ ZHeader = {
 	    ZMemory.set_byte(44,9);
 	    ZMemory.set_byte(45,2);
 	}
-	//TODO obey the 1.0 standard
+	//TODO 1.0 set bits to indicate we obey the 1.0 standard
 	//ZMemory.set_byte(50,1);
 	//ZMemory.set_byte(51,0);
     }
