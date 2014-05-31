@@ -23,8 +23,8 @@ ZString = {
 			i++;
 			zscii = zscii.concat(ZString.get_abbrev(zchar2));
 		    } else {
-			//TODO 1.0 incomplete multibyte constructions are ok to print 3.6.1
-			ZError.die("Incomplete Z Char string");
+			//incomplete multibyte constructions are ok to print (they print nothing)
+			i = zchars.length
 		    }
 		}		
 	    } else if (zchar == 2) {
@@ -37,7 +37,8 @@ ZString = {
 			i++;
 			zscii = zscii.concat(ZString.get_abbrev(zchar2 + 32));
 		    } else {
-			ZError.die("Incomplete Z Char string");
+			//incomplete multibyte constructions are ok to print (they print nothing)
+			i = zchars.length
 		    }
 		}		    
 	    } else if (zchar == 3) {
@@ -50,7 +51,8 @@ ZString = {
 			i++;
 			zscii = zscii.concat(ZString.get_abbrev(zchar2 + 64));
 		    } else {
-			ZError.die("Incomplete Z Char string");
+			//incomplete multibyte constructions are ok to print (they print nothing)
+			i = zchars.length
 		    }
 		}		    
 	    } else if (zchar == 4) {
@@ -74,7 +76,8 @@ ZString = {
 		    i++;
 		    zscii.push((32*zchar2)+zchar3);
 		} else {
-		    ZError.die("Incomplete Z Char string");
+		    //incomplete multibyte constructions are ok to print (they print nothing)
+		    i = zchars.length
 		}
 	    } else {
 		zscii.push(alphabet_table[zchar - 6 + (cur_case * 26)]);
