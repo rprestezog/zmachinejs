@@ -154,33 +154,24 @@ ZString = {
     'get_zchar_map':function(){
 	var alphabet_table = ZString.get_alphabet_table();
 	var zchar_map = {};
-	var ver = ZHeader.version();
-	var shift1;
-	var shift2;
-	if (ver < 3) {
-	    shift1 = 2;
-	    shift2 = 3;
-	} else {
-	    shift1 = 4;
-	    shift2 = 5;
-	}
 	var i = 0;
 	while (i < 26) {
-	    zchar_map[alphabet_table[i]] = [i+6];
+	    zchar_map[alphabet_table[i]] = [0,i+6];
 	    i++;
 	}
 	while (i < 52) {
-	    zchar_map[alphabet_table[i]] = [shift1,i-20];
+	    zchar_map[alphabet_table[i]] = [1,i-20];
 	    i++;
 	}
 	i += 1
 	while (i < 78) {
-	    zchar_map[alphabet_table[i]] = [shift2,i-46];
+	    zchar_map[alphabet_table[i]] = [2,i-46];
 	    i++;
 	}
-	zchar_map[32] = [0];
+	zchar_map[32] = [0,0];
+	var ver = ZHeader.version();
 	if (ver == 1 ){
-	    zchar_map[13] = [1];
+	    zchar_map[13] = [0,1];
 	}
 	return zchar_map;
     }
@@ -305,25 +296,56 @@ ZString = {
     }
     ,
     'zscii_to_zchars':function(zscii){
-	var zchars = [];
+	var case_zchars = [];
 	var i = 0;
 	var zchar_map = ZString.get_zchar_map();
 	while (i < zscii.length) {
 	    var next_zscii = zscii[i];
 	    if (zchar_map[next_zscii] != undefined) {
-		var next_zchars = zchar_map[next_zscii];
-		var j = 0;
-		while (j < next_zchars.length) {
-		    zchars.push(next_zchars[j]);
-		    j++;
-		}
+		case_zchars.push( zchar_map[next_zscii]);
 	    } else {
-		zchars.push(5,6,(next_zscii>>5)&31,next_zscii&31);
+		case_zchars.push( [2,6,(next_zscii>>5)&31,next_zscii&31]);
 	    }
 	    i++;
 	}
-	//TODO 1.0 For version 1 and 2, we need to use shift locks for runs of two or more from the same case 3.7.1
-	//this may require a bit of rewrite.
+	var zchars = [];
+	var ver = ZHeader.version();
+	var j = 0;
+	var cur_case = 0;
+	while (j < case_zchars.length) {
+	    var this_case = case_zchars[j][0];
+	    //shift case if necessary
+	    if (ver < 3) {
+		var shift = (3 + this_case - cur_case) % 3;
+		if (shift > 0) {
+		    //check next case
+		    if (j+1 < case_zchars.length) {
+			var next_case = case_zchars[j+1][0];
+			if (this_case == next_case) {
+			    //shift lock
+			    zchars.push(3+shift);
+			    cur_case = (cur_case + shift)%3;
+			} else {
+			    //single shift
+			    zchars.push(1+shift);
+			}
+		    } else {
+			//single shift
+			zchars.push(1+shift);
+		    }
+		}
+	    } else {
+		if (this_case > 0) {
+		    zchars.push(3+this_case);
+		}
+	    }
+	    var k = 1;
+	    while (k < case_zchars[j].length) {
+		zchars.push(case_zchars[j][k]);
+		k++;
+	    }
+	    j++
+	}
 	return zchars;
     }
 };
