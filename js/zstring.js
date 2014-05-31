@@ -234,10 +234,13 @@ ZString = {
 	    return " ";
 	} else if (zscii === 13) {
 	    return "\n";
+	} else if (zscii === 39) {
+	    //zscii 39 should be printed as right quote, not neutral quote
+	    return String.fromCharCode(8217);
+	} else if (zscii === 96) {
+	    //zscii 96 should be printed as left quote, not a grave accent
+	    return String.fromCharCode(8216);
 	} else if ((zscii >= 32) && (zscii <= 126)) {
-	    //TODO 1.0 zscii 96 should be a left quote, not a grave accent `
-	    //zscii 39 should be right quote, not neutral quote
-	    // http://www.cl.cam.ac.uk/~mgk25/ucs/quotes.html
 	    return String.fromCharCode(zscii);
 	} else if ((zscii >= 155) && (zscii <= 251)) {
 	    var extra_characters_table = ZString.get_extra_characters_table();
