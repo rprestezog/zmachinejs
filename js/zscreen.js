@@ -25,7 +25,13 @@ ZScreen = {
     ,
     'font':null
     ,
+    'quote_style':null
+    ,
+    'cursor_color':null
+    ,
     'init_screen':function(){
+	ZScreen.quote_style = 1; //left and right quotes in place of ` and '
+	ZScreen.cursor_color = '#D3D3D3';
 	var body_size = ZDOM.get_body_size();
 	var max_width = body_size.width;
 	var max_height = body_size.height;
@@ -330,10 +336,10 @@ ZScreen = {
     'show_cursor':function(line,column){
 	ZScreen.hide_cursor();
 	if (ZScreen.window == 'upper') {
-	    ZScreen.upper_cursor.old_color = ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,"#D3D3D3");
+	    ZScreen.upper_cursor.old_color = ZDOM.toggle_upper_cursor(ZScreen.upper_cursor.x,ZScreen.upper_cursor.y,ZScreen.cursor_color);
 	    ZScreen.upper_cursor.shown = true;
 	} else {
-	    ZDOM.show_lower_cursor("#D3D3D3");
+	    ZDOM.show_lower_cursor(ZScreen.cursor_color);
 	}
     }
     ,
@@ -346,6 +352,14 @@ ZScreen = {
     }
     ,
     'print_string':function(string){
+	//this function could use some cleanup.  
+	//specifically, around buffered/unbuffered text in the lower window.
+
+	// in some cases, we'll want to fiddle with quotes, as suggested in the spec
+	if ((ZScreen.font != 3) && (ZScreen.quote_style == 1)) {
+	    string = string.replace(/\`/g, String.fromCharCode(8216));
+	    string = string.replace(/\'/g, String.fromCharCode(8217));  
+	}
 	ZScreen.hide_cursor();
 	var style = ZScreen.get_style();
 	if (ZScreen.window == 'upper') {

@@ -225,12 +225,6 @@ ZString = {
 	    return " ";
 	} else if (zscii === 13) {
 	    return "\n";
-	} else if (zscii === 39) {
-	    //zscii 39 should be printed as right quote, not neutral quote
-	    return String.fromCharCode(8217);
-	} else if (zscii === 96) {
-	    //zscii 96 should be printed as left quote, not a grave accent
-	    return String.fromCharCode(8216);
 	} else if ((zscii >= 32) && (zscii <= 126)) {
 	    return String.fromCharCode(zscii);
 	} else if ((zscii >= 155) && (zscii <= 251)) {
