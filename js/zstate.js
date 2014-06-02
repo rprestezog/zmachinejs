@@ -490,6 +490,7 @@ ZState = {
             var save_game_key = ZState.storyfile;
 	    var save_game_name = ZIO.get_save_game_name();
             //TODO try and catch save errors
+	    //TODO consider Quetzal support (how do we get the file out?)
             localStorage.setItem(save_game_key + save_game_name, JSON.stringify(save_game));
 	    return 1;
         } else {
@@ -506,17 +507,20 @@ ZState = {
 	    var save_game_name = ZIO.get_save_game_name();
 	    var save_game_JSON = localStorage.getItem(save_game_key + save_game_name);
 	    if (save_game_JSON == undefined) {
+		//TODO consider an alert dialog box
 		ZError.log('Restore failed!');
 		return 0;
             }
             var save_game = JSON.parse(save_game_JSON);	    
-	    //TODO preserve header bytes;
-	    //TODO detect different file  
+	    //TODO 1.0 preserve header bytes 6.1.2
+	    //TODO 1.0 detect different file 6.1.2.1  
+	    //TODO 1.0 reset header bytes 6.1.2.2
 	    ZMemory.memory = save_game.Memory;
 	    ZState.call_stack = save_game.Stack;
 	    ZState.PC = save_game.PC;
 	    return 1;
         } else {
+	    //TODO consider an alert dialog box
             // Sorry! No web storage support..
             ZError.log('Sorry! No web storage support..');
             return 0;
@@ -534,10 +538,11 @@ ZState = {
     ,
     'restore_undo':function(){
 	if (ZState.undo.length == 0) {
+	    //TODO 1.0 multple undos? or at least a more graceful failure
 	    return 0;
 	}
 	var save_game = JSON.parse(ZState.undo);
-	//TODO preserve header bytes?
+	//TODO 1.0 preserve/reset header bytes 6.1.2.2
 	ZMemory.memory = save_game.Memory;
 	ZState.call_stack = save_game.Stack;
 	ZState.PC = save_game.PC;

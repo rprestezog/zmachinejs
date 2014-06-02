@@ -598,7 +598,7 @@ ZOps = {
 	//0OP:183 7 1 restart
 	//Restart the game. (Any "Are you sure?" question must be asked by the game, not the interpreter.) The only pieces of information surviving from the previous state are the "transcribing to printer" bit (bit 0 of 'Flags 2' in the header, at address $10) and the "use fixed pitch font" bit (bit 1 of 'Flags 2').
 	//In particular, changing the program start address before a restart will not have the effect of restarting from this new address. 
-	//TODO save header bits, probably do something more fancy than call load_game.
+	//TODO 1.0 save header bits 6.1.3
 	ZState.reload_game();
 	return 0;
     }
