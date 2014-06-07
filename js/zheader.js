@@ -1,5 +1,11 @@
 ZHeader = {
-    'set_for_new_game':function(){
+    'flags2_stash':null
+    ,
+    'stash_flags2':function(){
+	ZHeader.flags2_stash = ZMemory.get_word(16);
+    }
+    ,
+    'set_fields':function(){
 	var ver = ZHeader.version();
 	ZError.debug("Version: " + ver);
 	var release = ZMemory.get_word(2);
@@ -24,26 +30,30 @@ ZHeader = {
  	    flags1 &= ~ 34;
  	    flags1 |= 157;
 	}
-	ZMemory.set_byte(1,flags1)
-	
+	ZMemory.set_byte(1,flags1);
+
+	var flags2 = ZMemory.get_word(16);
+	if (ZHeader.flags2_stash !== null) {
+	    flags2 &= ~(3);
+	    flags2 |= (ZHeader.flags2_stash & 3);
+	    ZHeader.flags2_stash = null
+	}
 	if (ver  == 5) {
-	    var flags2 = ZMemory.get_word(16);
 	    flags2 &= ~(8 + 32 + 128);
-	    ZMemory.set_word(16,flags2)
 	}
 	if (ver >= 6) {
-	    var flags2 = ZMemory.get_word(16);
-	    flags2 &= ~(32 + 128 + 256);
-	    ZMemory.set_word(16,flags2)
+	    flags2 &= ~(8 + 32 + 128 + 256);
+	}
+	ZMemory.set_word(16,flags2)
+
+	if (ver >= 5) {
+	    ZMemory.set_byte(44,9); // backgroud white
+	    ZMemory.set_byte(45,2); // foreground black
 	}
 
 	if (ver >=4) {
 	    ZMemory.set_byte(30,4); //interpreter number -- 'Amiga', best for Beyond Zork
 	    ZMemory.set_byte(31,65); //interpreter version 'A' 
-	}
-	if (ver >= 5) {
-	    ZMemory.set_byte(44,9);
-	    ZMemory.set_byte(45,2);
 	}
 	//TODO 1.0 set bits to indicate we obey the 1.0 standard
 	//ZMemory.set_byte(50,1);

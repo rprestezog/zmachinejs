@@ -54,9 +54,8 @@ ZScreen = {
 	
 	ZDOM.clear_screen();
 	ZDOM.set_screen_size(ZScreen.width,ZScreen.height);
-	ZHeader.set_screen_size(ZScreen.width,ZScreen.height);
+	ZScreen.set_header_bytes();
 	ZScreen.set_colour(1,1);
-	//The header sets default text to black on white. Should this be done here?
 	var ver = ZHeader.version();
 	if (ver <= 3) {
 	    ZDOM.add_status_line();
@@ -75,6 +74,12 @@ ZScreen = {
 	ZDOM.add_lower_window();
 	
 	ZScreen.erase_window(-1);
+    }
+    ,
+    'set_header_bytes':function(){
+	ZHeader.set_screen_size(ZScreen.width,ZScreen.height);
+	//The header sets default text to black on white. Should this also be done here?
+	//TODO should we support mid game screen size changes?
     }
     ,
     'resize_lower_window':function(){

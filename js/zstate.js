@@ -10,7 +10,7 @@ ZState = {
     'load_game':function(url){
 	ZState.storyfile = url;
 	ZDOM.init_body();
-	ZError.debug("Loading " + ZState.storyfile);
+	ZError.debug("Loading " + ZState.storyfile);	
 	ZMemory.load_memory_from_file(ZState.storyfile,ZState.start_game);
 	//asynchronous
     }
@@ -18,13 +18,14 @@ ZState = {
     'reload_game':function(){
 	ZDOM.init_body();
 	ZError.debug("Loading " + ZState.storyfile);
+	ZHeader.stash_flags2();
 	ZMemory.load_memory_from_file(ZState.storyfile,ZState.start_game);
 	//asynchronous
     }
     ,
     'start_game':function(){
 	ZError.debug("Initializing header");
-	ZHeader.set_for_new_game();
+	ZHeader.set_fields();
 	ZScreen.init_screen();
 	ZIO.init_io();
 	ZState.init_state();
@@ -512,10 +513,11 @@ ZState = {
 		return 0;
             }
             var save_game = JSON.parse(save_game_JSON);	    
-	    //TODO 1.0 preserve header bytes 6.1.2
 	    //TODO 1.0 detect different file 6.1.2.1  
-	    //TODO 1.0 reset header bytes 6.1.2.2
+	    ZHeader.stash_flags2();
 	    ZMemory.memory = save_game.Memory;
+	    ZHeader.set_fields();
+	    ZScreen.set_header_bytes();
 	    ZState.call_stack = save_game.Stack;
 	    ZState.PC = save_game.PC;
 	    return 1;
@@ -542,8 +544,10 @@ ZState = {
 	    return 0;
 	}
 	var save_game = JSON.parse(ZState.undo);
-	//TODO 1.0 preserve/reset header bytes 6.1.2.2
+	ZHeader.stash_flags2();
 	ZMemory.memory = save_game.Memory;
+	ZHeader.set_fields();
+	ZScreen.set_header_bytes();
 	ZState.call_stack = save_game.Stack;
 	ZState.PC = save_game.PC;
 	ZState.undo = '';
