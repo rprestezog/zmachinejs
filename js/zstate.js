@@ -515,7 +515,10 @@ ZState = {
 		return 0;
             }
             var save_game = JSON.parse(save_game_JSON);	    
-	    //TODO 1.0 detect different file 6.1.2.1  
+	    //TODO detect loading saved game from different storyfile 6.1.2.1
+	    // Currently we're somewhat protected because the storyfile url is in the key
+	    // perhaps we should do more though, like support Quetzal
+	    // I'm going to postone improvements in this behavior until after 1.0
 	    ZHeader.stash_flags2();
 	    ZMemory.memory = save_game.Memory;
 	    ZHeader.set_fields();
