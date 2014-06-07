@@ -3,7 +3,9 @@ ZState = {
     ,
     'call_stack':null
     ,
-    'undo':''
+    'undo':[]
+    ,
+    'max_undos':4
     ,
     'storyfile':null
     ,
@@ -534,23 +536,24 @@ ZState = {
 	save_game.Memory = ZMemory.memory;
 	save_game.Stack = ZState.call_stack;
 	save_game.PC = ZState.PC;
-	ZState.undo = JSON.stringify(save_game);
+	ZState.undo.push( JSON.stringify(save_game) );
+	if (ZState.undo.length > ZState.max_undos) {
+	    ZState.undo.shift();
+	}
 	return 1;
     }
     ,
     'restore_undo':function(){
 	if (ZState.undo.length == 0) {
-	    //TODO 1.0 multple undos? or at least a more graceful failure
 	    return 0;
 	}
-	var save_game = JSON.parse(ZState.undo);
+	var save_game = JSON.parse(ZState.undo.pop());
 	ZHeader.stash_flags2();
 	ZMemory.memory = save_game.Memory;
 	ZHeader.set_fields();
 	ZScreen.set_header_bytes();
 	ZState.call_stack = save_game.Stack;
 	ZState.PC = save_game.PC;
-	ZState.undo = '';
 	return 1;
     }
 };
