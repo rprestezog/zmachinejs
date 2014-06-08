@@ -26,7 +26,6 @@ ZIO = {
 	ZIO.read_char_ready = false;
 	ZDOM.set_keydown_handler(ZIO.keydown);
 	ZDOM.set_keypress_handler(ZIO.keypress);
-	//TODO initialize Header transcript bits from here
     }
     ,
     'print_zscii':function(zscii){
@@ -37,8 +36,9 @@ ZIO = {
 	    while (j < zscii.length) {
 		var code = zscii[j];
 		if (code != 0) {
-		    //TODO more thorough check of printable zscii codes?
+		    //TODO 1.0 more thorough check of printable zscii codes 7.1.2.2.1
 		    ZIO.buffer_stack[i].zscii.push(code);
+		    //TODO 1.0 actually write to memory
 		}
 		j++;
 	    }
@@ -47,7 +47,7 @@ ZIO = {
 	    if (ZIO.output_streams[1] == 1) {
 		ZScreen.print_string(string);
 	    }
-	    //TODO test for streams 2 and 4
+	    //TODO 1.0 test for streams 2 and 4
 	}
     }
     ,
@@ -69,7 +69,7 @@ ZIO = {
 	if (number == 1) {
 	    ZIO.output_streams[1] = 1;
 	} else if (number == 2) {
-	    ZError.die("TODO transcript");
+	    ZError.die("TODO 1.0 transcript");
 	} else if (number == 3) {
 	    var buffer = {'zscii':[],'table':table,'width':width};
 	    ZIO.buffer_stack.push(buffer);
