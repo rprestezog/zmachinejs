@@ -905,9 +905,9 @@ ZOps = {
 	//If set to 1, text output on the lower window in stream 1 is buffered up so that it can be word-wrapped properly. If set to 0, it isn't.
 	//In Version 6, this opcode is redundant (the "buffering" window attribute can be set instead). It is used twice in each of Infocom's Version 6 story files, in the $verify routine. Frotz responds by setting the current window's "buffering" attribute, while Infocom's own interpreters respond by doing nothing. This standard leaves the result of buffer_mode undefined in Version 6.
 	if (flag == 0) {
-	    //TODO Figure out how to do unbuffered text in the lower window
+	    ZScreen.set_buffer_mode(0);
 	} else {
-	    //TODO resume buffered text in the lower window
+	    ZScreen.set_buffer_mode(1);
 	}
 	return 1;
     }

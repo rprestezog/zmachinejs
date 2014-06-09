@@ -29,9 +29,15 @@ ZScreen = {
     ,
     'cursor_color':null
     ,
+    'buffer_mode':null
+    ,
+    'buffer_chars':null
+    ,
     'init_screen':function(){
 	ZScreen.quote_style = 1; //left and right quotes in place of ` and '
 	ZScreen.cursor_color = '#D3D3D3';
+	ZScreen.buffer_mode = 1;
+	ZScreen.buffer_chars = 0;
 	var body_size = ZDOM.get_body_size();
 	var max_width = body_size.width;
 	var max_height = body_size.height;
@@ -131,11 +137,13 @@ ZScreen = {
 	    ZScreen.seen_upper_lines = 0;
 	    ZDOM.clear_upper_window();
 	    ZDOM.clear_lower_window(ZScreen.background);
+	    ZScreen.buffer_chars = 0;
 	    ZScreen.window = 'lower';
 	    ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    ZScreen.resize_lower_window();
 	} else if (window == 0) {
 	    ZDOM.clear_lower_window(ZScreen.background);
+	    ZScreen.buffer_chars = 0;
 	    ZScreen.resize_lower_window();
 	    //TODO move cursor to bottom left for version 4
 	} else if (window == 1) {
@@ -168,6 +176,10 @@ ZScreen = {
 	    //TODO version 6 windows
 	    ZError.die("set_window: " + window);
 	}
+    }
+    ,
+    'set_buffer_mode':function(buffer_mode){
+	ZScreen.buffer_mode=buffer_mode;
     }
     ,
     'is_transcript_on':function(){
@@ -415,15 +427,23 @@ ZScreen = {
 		}
 	    }
 	} else if (string.length == 1) {
+	    if (ZScreen.buffer_mode == 0 && ZScreen.buffer_chars >= ZScreen.width) {
+		ZDOM.print_lower_newline();
+		ZScreen.buffer_chars = 0;
+	    }
 	    if ((ZScreen.font) == 3 && (string.charCodeAt(0) >= 32) && (string.charCodeAt(0) <= 126)) {
 		var URI = ZGIF.get_font_3_URI(string.charCodeAt(0),style['color']);
 		ZDOM.print_lower_img(URI,style['background-color']);
+		ZScreen.buffer_chars += 1;
 	    } else if (string == '\n') {
 		ZDOM.print_lower_newline();
+		ZScreen.buffer_chars = 0;
 	    } else if (string == ' ') {
 		ZDOM.print_lower_space(style);
+		ZScreen.buffer_chars += 1;
 	    } else {
 		ZDOM.print_lower_string(string, style);
+		ZScreen.buffer_chars += 1;
 	    }
 	} else {
 	    if (ZScreen.font == 3) {
@@ -436,6 +456,7 @@ ZScreen = {
 		    first_line = false;
 		} else {
 		    ZDOM.print_lower_newline();
+		    ZScreen.buffer_chars = 0;
 		}
 		var line = lines.shift();
 		if (style['font-family'] == 'monospace') {
@@ -445,15 +466,66 @@ ZScreen = {
 			if (first_word) {
 			    first_word = false;
 			} else {
+			    if (ZScreen.buffer_mode == 0 && ZScreen.buffer_chars >= ZScreen.width) {
+				ZDOM.print_lower_newline();
+				ZScreen.buffer_chars = 0;
+			    }
 			    ZDOM.print_lower_space(style);
+			    ZScreen.buffer_chars += 1;
 			}
 			var word = words.shift();
-			if (word.length > 0) {
-			    ZDOM.print_lower_string(word, style);
+			if (ZScreen.buffer_mode == 0) {
+			    while (word.length > 0) {
+				if (ZScreen.buffer_chars >= ZScreen.width) {
+				    ZDOM.print_lower_newline();
+				    ZScreen.buffer_chars = 0;
+				} else {
+				    var room = ZScreen.width - ZScreen.buffer_chars;
+				    if (room < word.length) {
+					ZDOM.print_lower_string(word.substring(0,room), style);
+					word = word.substring(room);
+					ZDOM.print_lower_newline();
+					ZScreen.buffer_chars = 0;
+				    } else {
+					ZDOM.print_lower_string(word, style);
+					ZScreen.buffer_chars += word.length;
+					word = '';
+				    }
+				}
+			    }
+			} else {
+			    if (word.length > 0) {
+				ZDOM.print_lower_string(word, style);
+				ZScreen.buffer_chars += word.length;
+			    }
 			}
 		    }
 		} else {
-		    ZDOM.print_lower_string(line, style);
+		    if (ZScreen.buffer_mode == 0) {
+			while (line.length > 0) {
+			    if (ZScreen.buffer_chars >= ZScreen.width) {
+				ZDOM.print_lower_newline();
+				ZScreen.buffer_chars = 0;
+			    } else {
+				var room = ZScreen.width - ZScreen.buffer_chars;
+				if (room < line.length) {
+				    ZDOM.print_lower_string(line.substring(0,room), style);
+				    line = line.substring(room);
+				    ZDOM.print_lower_newline();
+				    ZScreen.buffer_chars = 0;
+				} else {
+				    ZDOM.print_lower_string(line, style);
+				    ZScreen.buffer_chars += line.length;
+				    line = '';
+				}
+			    }
+			}
+		    } else {
+			if (line.length > 0) {
+			    ZDOM.print_lower_string(line, style);
+			    ZScreen.buffer_chars += line.length;
+			}
+		    }
 		}
 	    }
 	}
@@ -464,6 +536,9 @@ ZScreen = {
     'backspace':function(){
 	//TODO check if we're in a good place to back space?
 	ZDOM.lower_backspace();
+	if (ZScreen.buffer_chars > 0) {
+	    ZScreen.buffer_chars -= 1;
+	}
     }
     ,
     'print_room_name':function(room_name){
