@@ -51,7 +51,6 @@ ZIO = {
 		//The spec is unclear, but some games clearly require it.
 		ZTranscript.print_string(string);
 	    }
-	    //TODO 1.0 test for stream 4
 	}
     }
     ,
@@ -59,7 +58,7 @@ ZIO = {
 	if (ZIO.output_streams[3] > 0) {
 	    var i = ZIO.output_streams[3] - 1;
 	    //TODO version 6 width stuff
-	    //TODO coerce some chars to zscii other than 63=='?'
+	    //TODO 1.0 coerce some chars to zscii other than 63=='?' 7.5.3
 	    ZIO.buffer_stack[i].zscii.push(63);
 	} else {
 	    if (ZIO.output_streams[1] == 1) {
@@ -69,7 +68,6 @@ ZIO = {
 		//TODO 1.0 do this only in lower window ?
 		ZTranscript.print_string(String.fromCharCode(unicode_char));
 	    }
-	    //TODO test for stream 4
 	}
     }
     ,
@@ -84,6 +82,7 @@ ZIO = {
 	    ZIO.output_streams[3] += 1;
 	} else if (number == 4) {
 	    ZError.die("TODO stream 4");
+	    //TODO 1.0 support for stream 4  7.1.2
 	} else {
 	    ZError.die("select stream" + number);
 	}
@@ -111,6 +110,7 @@ ZIO = {
 		ZError.die("popped empty buffer stack");
 	    }
 	} else if (number == 4) {
+	    //TODO 1.0 support for stream 4  7.1.2
 	    ZError.die("TODO deselect stream 4");
 	} else {
 	    ZError.die("deselect stream" + number);
@@ -199,6 +199,7 @@ ZIO = {
 		ZTranscript.print_string(string);
 	    }
 	}
+	//TODO 1.0 support for stream 4  7.1.2
 	ZIO.fill_text_buffer(ZIO.read_text,ZIO.input_buffer);
 	ZDictionary.tokenise(ZIO.read_text,ZIO.read_parse);
 	if (ver >= 5) {
@@ -235,6 +236,7 @@ ZIO = {
 	    var abort = ZState.call_interrupt_routine(routine);
 	    if (abort) {
 		ZIO.end_read_char(0);
+		//TODO 1.0 support for stream 4  7.1.2
 	    } else {
 		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
@@ -250,6 +252,7 @@ ZIO = {
 	    if (abort) {
 		ZIO.input_buffer = [0];
 		ZIO.end_read();
+		//TODO 1.0 support for stream 4  7.1.2
 	    } else {
 		//TODO if the there has been printing, reprint input.
 		ZScreen.see_upper_window();
@@ -280,6 +283,7 @@ ZIO = {
 	    clearTimeout(ZIO.read_char_timer);
 	}
 	ZIO.read_char_timer = undefined;
+	//TODO 1.0 support for stream 4  7.1.2
 	ZState.store(zscii);
 	//asyncronous read is done.  start z-machine again
 	ZState.run();
