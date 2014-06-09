@@ -96,6 +96,8 @@ ZScreen = {
     'see_upper_window':function(){
 	//call this when we know that the upper window has been seen
 	//that is, right before read or read char
+	//I'm also calling it on key presses during reads
+	//on the theory that the player has had opportunity to see any quote box
 	
 	//first do a last minute trim
 	ZScreen.trim_upper_window();
@@ -163,7 +165,20 @@ ZScreen = {
 	    ZScreen.window = 'upper';
 	    ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	} else {
+	    //TODO version 6 windows
 	    ZError.die("set_window: " + window);
+	}
+    }
+    ,
+    'is_transcript_on':function(){
+	if (ZScreen.window == 'lower') {
+	    return true;
+	} else if (ZScreen.window == 'upper') {
+	    return false;
+	} else {
+	    //TODO version 6 windows
+	    ZError.die("is_transcript_on: " + ZScreen.window);
+	    return false;
 	}
     }
     ,

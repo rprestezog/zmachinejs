@@ -17,6 +17,7 @@ ZDOM = {
         $("body").append('<div class = "screen"></div>');
         $("body").append('<div class = "error"></div>');
         $(".error").css("color","red");
+        $("body").append('<div class = "transcript"></div>');
 	ZDOM.init_monospace_size();
     }
     ,
@@ -123,6 +124,18 @@ ZDOM = {
     ,
     'print_lower_newline':function(){
 	$("<br/>").insertBefore(".lower > .cursor");
+    }
+    ,
+    'print_transcript_string':function(string){
+	$("<span></span>").text(string).appendTo(".transcript");
+    }
+    ,
+    'print_transcript_space':function(){
+	$("<span>&nbsp;</span>").appendTo(".transcript");
+    }
+    ,
+    'print_transcript_newline':function(){
+	$("<br/>").appendTo(".transcript");
     }
     ,
     'add_upper_window':function(){

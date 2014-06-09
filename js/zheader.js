@@ -179,6 +179,26 @@ ZHeader = {
 	return false;
     }
     ,
+    'is_transcript_on':function(){
+	var flags2 = ZMemory.get_word(16);
+	if ((flags2 & 1) == 1) {
+	    return true;
+	}
+	return false;
+    }
+    ,
+    'turn_on_transcript':function(){
+	var flags2 = ZMemory.get_word(16);
+	flags2 |= 1;
+	ZMemory.set_word(16, flags2);
+    }
+    ,
+    'turn_off_transcript':function(){
+	var flags2 = ZMemory.get_word(16);
+	flags2 &= ~(1);
+	ZMemory.set_word(16, flags2);
+    }
+    ,
     'unpack_routine_addr':function(addr){
 	var ver = ZHeader.version();
 	if (ver <= 3) {

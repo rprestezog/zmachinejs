@@ -38,7 +38,6 @@ ZIO = {
 		if (code != 0) {
 		    //TODO 1.0 more thorough check of printable zscii codes 7.1.2.2.1
 		    ZIO.buffer_stack[i].zscii.push(code);
-		    //TODO 1.0 actually write to memory
 		}
 		j++;
 	    }
@@ -47,7 +46,12 @@ ZIO = {
 	    if (ZIO.output_streams[1] == 1) {
 		ZScreen.print_string(string);
 	    }
-	    //TODO 1.0 test for streams 2 and 4
+	    if (ZHeader.is_transcript_on() && ZScreen.is_transcript_on()) {
+		//TODO 1.0 do this only in lower window ?
+		//The spec is unclear, but some games clearly require it.
+		ZTranscript.print_string(string);
+	    }
+	    //TODO 1.0 test for stream 4
 	}
     }
     ,
@@ -61,7 +65,11 @@ ZIO = {
 	    if (ZIO.output_streams[1] == 1) {
 		ZScreen.print_string(String.fromCharCode(unicode_char));
 	    }
-	    //TODO test for streams 2 and 4
+	    if (ZHeader.is_transcript_on() && ZScreen.is_transcript_on()) {
+		//TODO 1.0 do this only in lower window ?
+		ZTranscript.print_string(String.fromCharCode(unicode_char));
+	    }
+	    //TODO test for stream 4
 	}
     }
     ,
@@ -69,7 +77,7 @@ ZIO = {
 	if (number == 1) {
 	    ZIO.output_streams[1] = 1;
 	} else if (number == 2) {
-	    ZError.die("TODO 1.0 transcript");
+	    ZHeader.turn_on_transcript();
 	} else if (number == 3) {
 	    var buffer = {'zscii':[],'table':table,'width':width};
 	    ZIO.buffer_stack.push(buffer);
@@ -85,7 +93,7 @@ ZIO = {
 	if (number == 1) {
 	    ZIO.output_streams[1] = 0;
 	} else if (number == 2) {
-	    ZError.die("TODO transcript off");
+	    ZHeader.turn_off_transcript();
 	} else if (number == 3) {
 	    if (ZIO.output_streams[3] > 0) {
 		var buffer = ZIO.buffer_stack.pop();
@@ -184,12 +192,19 @@ ZIO = {
 	    clearTimeout(ZIO.read_timer);
 	}
 	ZIO.read_timer = undefined;
+	var ver = ZHeader.version();
+	if (ZHeader.is_transcript_on()) {
+	    if (ver != 6) {
+		var string = ZString.zscii_to_string(ZIO.input_buffer);
+		ZTranscript.print_string(string);
+	    }
+	}
 	ZIO.fill_text_buffer(ZIO.read_text,ZIO.input_buffer);
 	ZDictionary.tokenise(ZIO.read_text,ZIO.read_parse);
-	var ver = ZHeader.version();
 	if (ver >= 5) {
 	    var value = ZIO.input_buffer[ZIO.input_buffer.length - 1];
 	    if (value == 10) {
+		//TODO this is likely unnecessary
 		value = 13;
 	    }
 	    ZState.store(value);
@@ -340,6 +355,8 @@ ZIO = {
         if (!ZIO.read_ready && !ZIO.read_char_ready) {
             return false;
         }
+	//clear a quotebox is present
+	ZScreen.see_upper_window();
         if (which == 32) {
             //space
             return true;
