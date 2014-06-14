@@ -7,6 +7,8 @@ ZState = {
     ,
     'max_undos':4
     ,
+    'save_format_version':'' //rev this whenever the format changes
+    ,
     'storyfile':null
     ,
     'load_game':function(url){
@@ -484,37 +486,32 @@ ZState = {
     }
     ,
     'save_game':function(){
-	if(typeof(Storage)!=="undefined") {
-            // Yes! localStorage support!
-	    var save_game = {};
-	    save_game.Memory = ZMemory.memory;
-	    save_game.Stack = ZState.call_stack;
-	    save_game.PC = ZState.PC;
-            var save_game_key = ZState.storyfile;
-	    var save_game_name = ZIO.get_save_game_name();
-            //TODO try and catch save errors
-	    //TODO consider Quetzal support (how do we get the file out?)
-            localStorage.setItem(save_game_key + save_game_name, JSON.stringify(save_game));
+	var save_game = {};
+	save_game.Memory = ZMemory.memory;
+	save_game.Stack = ZState.call_stack;
+	save_game.PC = ZState.PC;
+	var save_game_key = ZState.storyfile;
+	var save_game_name = ZIO.get_save_game_name();
+	var save_format_version = ZState.save_format_version;
+	var key_string = save_game_key + save_game_name + save_format_version;
+	//TODO consider making this more collision proof?
+	var value_string = JSON.stringify(save_game);
+	//TODO consider Quetzal support (how do we get the file out?)
+	if (ZFILE.store_string(key_string,value_string)) {
 	    return 1;
-        } else {
-            // Sorry! No web storage support..
-            ZError.log('Sorry! No web storage support..');
-            return 0;
-        }
+	} else {
+	    return 0;
+	}
     }
     ,
     'restore_game':function(){
-	if(typeof(Storage)!=="undefined") {
-            // Yes! localStorage support!
-            var save_game_key = ZState.storyfile;
-	    var save_game_name = ZIO.get_save_game_name();
-	    var save_game_JSON = localStorage.getItem(save_game_key + save_game_name);
-	    if (save_game_JSON == undefined) {
-		//TODO consider an alert dialog box
-		ZError.log('Restore failed!');
-		return 0;
-            }
-            var save_game = JSON.parse(save_game_JSON);	    
+	var save_game_key = ZState.storyfile;
+	var save_game_name = ZIO.get_save_game_name();
+	var save_format_version = ZState.save_format_version;
+	var key_string = save_game_key + save_game_name + save_format_version;
+	var value_string = ZFILE.load_string(key_string);
+	if (value_string !== null) {
+            var save_game = JSON.parse(value_string);
 	    //TODO detect loading saved game from different storyfile 6.1.2.1
 	    // Currently we're somewhat protected because the storyfile url is in the key
 	    // perhaps we should do more though, like support Quetzal
@@ -529,7 +526,7 @@ ZState = {
         } else {
 	    //TODO consider an alert dialog box
             // Sorry! No web storage support..
-            ZError.log('Sorry! No web storage support..');
+            ZError.log('Restore game failed ...');
             return 0;
         }
     }
