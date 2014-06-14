@@ -47,8 +47,7 @@ ZIO = {
 		ZScreen.print_string(string);
 	    }
 	    if (ZHeader.is_transcript_on() && ZScreen.is_transcript_on()) {
-		//TODO 1.0 do this only in lower window ?
-		//The spec is unclear, but some games clearly require it.
+		//The spec is unclear, but some games require we only transcribe the lower window printing.
 		ZTranscript.print_string(string);
 	    }
 	}
@@ -58,14 +57,18 @@ ZIO = {
 	if (ZIO.output_streams[3] > 0) {
 	    var i = ZIO.output_streams[3] - 1;
 	    //TODO version 6 width stuff
-	    //TODO 1.0 coerce some chars to zscii other than 63=='?' 7.5.3
-	    ZIO.buffer_stack[i].zscii.push(63);
+	    zscii = ZString.unicode_to_zscii(unicode_char);
+	    if (code != 0) {
+		//TODO 1.0 more thorough check of printable zscii codes 7.1.2.2.1
+		ZIO.buffer_stack[i].zscii.push(zscii);
+	    } else {
+		ZIO.buffer_stack[i].zscii.push(63); // '?'
+	    }
 	} else {
 	    if (ZIO.output_streams[1] == 1) {
 		ZScreen.print_string(String.fromCharCode(unicode_char));
 	    }
 	    if (ZHeader.is_transcript_on() && ZScreen.is_transcript_on()) {
-		//TODO 1.0 do this only in lower window ?
 		ZTranscript.print_string(String.fromCharCode(unicode_char));
 	    }
 	}
@@ -77,9 +80,13 @@ ZIO = {
 	} else if (number == 2) {
 	    ZHeader.turn_on_transcript();
 	} else if (number == 3) {
-	    var buffer = {'zscii':[],'table':table,'width':width};
-	    ZIO.buffer_stack.push(buffer);
-	    ZIO.output_streams[3] += 1;
+	    if (ZIO.output_streams[3] < 16) {
+		var buffer = {'zscii':[],'table':table,'width':width};
+		ZIO.buffer_stack.push(buffer);
+		ZIO.output_streams[3] += 1;
+	    } else {
+		ZError.die("Output stream 3 stack is full");
+	    }
 	} else if (number == 4) {
 	    ZError.die("TODO stream 4");
 	    //TODO 1.0 support for stream 4  7.1.2
@@ -195,6 +202,7 @@ ZIO = {
 	var ver = ZHeader.version();
 	if (ZHeader.is_transcript_on()) {
 	    if (ver != 6) {
+		//TODO Should this happen in upper window reads?
 		var string = ZString.zscii_to_string(ZIO.input_buffer);
 		ZTranscript.print_string(string);
 	    }
