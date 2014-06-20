@@ -88,8 +88,11 @@ ZIO = {
 		ZError.die("Output stream 3 stack is full");
 	    }
 	} else if (number == 4) {
-	    ZError.die("TODO stream 4");
-	    //TODO 1.0 support for stream 4  7.1.2
+	    ZError.alert_once("output to stream 4 not supported");
+	    //no need to die on this though,
+	    //the game has no way of checking whether it's working	
+	    ZIO.output_streams[4] = 1;
+	    //OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	} else {
 	    ZError.die("select stream" + number);
 	}
@@ -117,8 +120,11 @@ ZIO = {
 		ZError.die("popped empty buffer stack");
 	    }
 	} else if (number == 4) {
-	    //TODO 1.0 support for stream 4  7.1.2
-	    ZError.die("TODO deselect stream 4");
+	    ZError.alert_once("output to stream 4 not supported");
+	    //no need to die on this though,
+	    //the game has no way of checking whether it's working	
+	    ZIO.output_streams[4] = 0;
+	    //OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	} else {
 	    ZError.die("deselect stream" + number);
 	}
@@ -207,7 +213,7 @@ ZIO = {
 		ZTranscript.print_string(string);
 	    }
 	}
-	//TODO 1.0 support for stream 4  7.1.2
+	//OPT 1.0 support for stream 4  7.1.2 , 7.1.2.3 , 7.6.5
 	ZIO.fill_text_buffer(ZIO.read_text,ZIO.input_buffer);
 	ZDictionary.tokenise(ZIO.read_text,ZIO.read_parse);
 	if (ver >= 5) {
@@ -244,7 +250,7 @@ ZIO = {
 	    var abort = ZState.call_interrupt_routine(routine);
 	    if (abort) {
 		ZIO.end_read_char(0);
-		//TODO 1.0 support for stream 4  7.1.2
+		//OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	    } else {
 		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
@@ -260,7 +266,7 @@ ZIO = {
 	    if (abort) {
 		ZIO.input_buffer = [0];
 		ZIO.end_read();
-		//TODO 1.0 support for stream 4  7.1.2
+		//OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	    } else {
 		//TODO if the there has been printing, reprint input.
 		ZScreen.see_upper_window();
@@ -291,7 +297,7 @@ ZIO = {
 	    clearTimeout(ZIO.read_char_timer);
 	}
 	ZIO.read_char_timer = undefined;
-	//TODO 1.0 support for stream 4  7.1.2
+	//OPT 1.0 support for stream 4  7.1.2 , 7.1.2.3 , 7.6.5
 	ZState.store(zscii);
 	//asyncronous read is done.  start z-machine again
 	ZState.run();

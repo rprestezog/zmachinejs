@@ -563,7 +563,7 @@ ZOps = {
 	//On Versions 3 and 4, attempts to save the game (all questions about filenames are asked by interpreters) and branches if successful. From Version 5 it is a store rather than a branch instruction; the store value is 0 for failure, 1 for "save succeeded" and 2 for "the game is being restored and is resuming execution again from here, the point where it was saved".
 	//It is illegal to use this opcode within an interrupt routine (one called asynchronously by a sound effect, or keyboard timing, or newline counting).
       	//*** The extension also has (optional) parameters, which save a region of the save area, whose address and length are in bytes, and provides a suggested filename: name is a pointer to an array of ASCII characters giving this name (as usual preceded by a byte giving the number of characters). See S 7.6. (Whether Infocom intended these options as part of Version 5 is doubtful, but it's too useful a feature to exclude from this Standard.) 
-	//version 4 behavior is unclear
+	//version 4 behavior is unclear is spec but this works with version 4 games
 	var success = ZState.save_game();
 	var ver = ZHeader.version();
 	if (ver < 4) {
@@ -1155,8 +1155,11 @@ ZOps = {
 	//It is illegal to use this opcode within an interrupt routine (one called asynchronously by a sound effect, or keyboard timing, or newline counting).
 	//*** The extension also has (optional) parameters, which save a region of the save area, whose address and length are in bytes, and provides a suggested filename: name is a pointer to an array of ASCII characters giving this name (as usual preceded by a byte giving the number of characters). See S 7.6. (Whether Infocom intended these options as part of Version 5 is doubtful, but it's too useful a feature to exclude from this Standard.) 
 	if (table != undefined) {
-	    ZError.die('TODO: save table');
-	    return 0;
+	    ZError.alert_once('unsupported save table');
+	    //OPT 1.0 consider supporting save/restore table
+	    //no need to die, storing failure is sufficient
+	    ZState.store(0);
+	    return 1;
 	} else {
 	    var success = ZState.save_game();
 	    ZState.store(success);
@@ -1174,8 +1177,11 @@ ZOps = {
 	//*** From Version 5 it can have optional parameters as save does, and returns the number of bytes loaded if so. (Whether Infocom intended these options as part of Version 5 is doubtful, but it's too useful a feature to exclude from this Standard.)
 	//If the restore fails, 0 is returned, but once again this necessarily happens since otherwise control is already elsewhere. 
 	if (table != undefined) {
-	    ZError.die('TODO: restore table');
-	    return 0;
+	    ZError.alert_once('unsupported restore table');
+	    //OPT 1.0 consider supporting save/restore table
+	    //no need to die, storing 0 bytes restored is sufficient
+	    ZState.store(0);
+	    return 1;
 	} else {
 	    var success = ZState.restore_game();
 	    ZState.store(success*2);

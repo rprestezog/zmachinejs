@@ -3,6 +3,8 @@ ZError = {
     ,
     'debugging':false
     ,
+    'alerts':{}
+    ,
     'log':function(text){
 	ZDOM.log_error(text)
     }
@@ -16,6 +18,13 @@ ZError = {
     'die':function(text){
 	ZError.log(text);
 	ZError.dead = true;
+    }
+    ,
+    'alert_once':function(text){
+	if (! ZError.alerts[text]) {
+	    alert(text);
+	    ZError.alerts[text] = true;
+	}
     }
     ,
     'is_dead':function(){

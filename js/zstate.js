@@ -524,9 +524,8 @@ ZState = {
 	    ZState.PC = save_game.PC;
 	    return 1;
         } else {
-	    //TODO consider an alert dialog box
-            // Sorry! No web storage support..
-            ZError.log('Restore game failed ...');
+	    //TODO 1.0 consider an alert dialog box 7.6.4
+	    ZError.log('Restore game failed ...');
             return 0;
         }
     }
