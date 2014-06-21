@@ -20,9 +20,13 @@ ZError = {
 	ZError.dead = true;
     }
     ,
+    'alert':function(text){
+	alert(text);
+    }
+    ,
     'alert_once':function(text){
 	if (! ZError.alerts[text]) {
-	    alert(text);
+	    ZError.alert(text);
 	    ZError.alerts[text] = true;
 	}
     }
