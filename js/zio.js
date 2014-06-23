@@ -340,13 +340,40 @@ ZIO = {
 	    return;
 	}
 	var room_num = ZState.get_variable(16);
+	//TODO 1.0 protect against invalid object numbers 8.2.2.1
 	var zchars = ZObject.get_short_name(room_num);
 	var zscii = ZString.zchars_to_zscii(zchars);
 	var room_name = ZString.zscii_to_string(zscii);
 	ZScreen.print_room_name(room_name);
 
 	if (ZHeader.is_time_game()) {
-	    ZError.die("TODO time game show status")
+	    var time_string = '';
+	    var hours = ZState.get_variable(17);
+	    if (hours < 24) {
+		time_string += String(1 + ((hours+11)%12));
+	    } else {
+		time_string += '88';
+		ZError.log("Hours out of range " + hours);
+	    }
+	    time_string += ':';
+	    var minutes = ZState.get_variable(18);
+	    if (minutes < 10) {
+		time_string += '0' + String(minutes);
+	    } else if (minutes < 60) {
+		time_string += String(minutes);
+	    } else {
+		time_string += '88';
+		ZError.log("Minutes out of range " + minutes);
+	    }
+	    time_string += ' ';
+	    if (hours < 12) {
+		time_string += 'AM';
+	    } else if (hours < 24) {
+		time_string += 'PM';
+	    } else {
+		time_string += '88';
+	    }	    
+	    ZScreen.print_score(time_string);
 	} else {
 	    var score = ZState.get_variable(17);
 	    if (score >= 32768){
