@@ -340,11 +340,15 @@ ZIO = {
 	    return;
 	}
 	var room_num = ZState.get_variable(16);
-	//TODO 1.0 protect against invalid object numbers 8.2.2.1
-	var zchars = ZObject.get_short_name(room_num);
-	var zscii = ZString.zchars_to_zscii(zchars);
-	var room_name = ZString.zscii_to_string(zscii);
-	ZScreen.print_room_name(room_name);
+	if ((room_num > 0) && (room_num < 256)) { 
+	    var zchars = ZObject.get_short_name(room_num);
+	    var zscii = ZString.zchars_to_zscii(zchars);
+	    var room_name = ZString.zscii_to_string(zscii);
+	    ZScreen.print_room_name(room_name);
+	} else {
+	    ZError.log('Invalid room number ' + room_num);
+	    ZScreen.print_room_name('');
+	}
 
 	if (ZHeader.is_time_game()) {
 	    var time_string = '';
