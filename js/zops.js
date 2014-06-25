@@ -953,7 +953,6 @@ ZOps = {
 	//See the remarks to S 9 for which forms of this opcode were actually used by Infocom.
 	//In theory, @sound_effect; (with no operands at all) is illegal. However interpreters are asked to beep (as if the operand were 1) if possible, and in any case not to halt.
 	if ((number == 1) || (number === undefined)) {
-	    //TODO 1.0 better alternatives to logging ding and beep 
 	    ZSound.high_bleep();
 	} else if (number == 2) {
 	    ZSound.low_bleep();
