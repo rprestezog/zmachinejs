@@ -231,6 +231,14 @@ ZDOM = {
         $(".error").append("<div>" + text + "</div>");
     }
     ,
+    'print_sound':function(sound){
+	var sound_span = $('<span></span>').text(sound).css("color","red").appendTo(".lower");
+	var cleanup = function() {
+	    sound_span.remove();
+	};
+	sound_span.fadeOut(5000,cleanup);
+    }
+    ,
     'keydown_handler':function(){
 	return true;
     }
