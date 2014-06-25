@@ -497,7 +497,7 @@ ZState = {
 	//TODO consider making this more collision proof?
 	var value_string = JSON.stringify(save_game);
 	//TODO consider Quetzal support (how do we get the file out?)
-	if (ZFILE.store_string(key_string,value_string)) {
+	if (ZFile.store_string(key_string,value_string)) {
 	    return 1;
 	} else {
 	    return 0;
@@ -509,7 +509,7 @@ ZState = {
 	var save_game_name = ZIO.get_save_game_name();
 	var save_format_version = ZState.save_format_version;
 	var key_string = save_game_key + save_game_name + save_format_version;
-	var value_string = ZFILE.load_string(key_string);
+	var value_string = ZFile.load_string(key_string);
 	if (value_string !== null) {
             var save_game = JSON.parse(value_string);
 	    //TODO detect loading saved game from different storyfile 6.1.2.1

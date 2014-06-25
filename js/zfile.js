@@ -1,11 +1,8 @@
-ZFILE = {
+ZFile = {
     // The idea for this module is the include all of the persistent storage functionality
     // Currently, I'm using local storage for gave saves and restores,
     // but in the future I might want to support reading and writing files in other ways,
     // or at least have some way to download from local storage.
-    'init_file':function(){
-    }
-    ,
     'store_string':function(key_string,value_string) {
         if(typeof(Storage)!=="undefined") {
             // Yes! localStorage support!

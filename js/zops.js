@@ -954,9 +954,9 @@ ZOps = {
 	//In theory, @sound_effect; (with no operands at all) is illegal. However interpreters are asked to beep (as if the operand were 1) if possible, and in any case not to halt.
 	if ((number == 1) || (number === undefined)) {
 	    //TODO 1.0 better alternatives to logging ding and beep 
-	    ZError.log("Ding!");
+	    ZSound.high_bleep();
 	} else if (number == 2) {
-	    ZError.log("Beep!");
+	    ZSound.low_bleep();
 	} else {
 	    ZError.log("Unexpected sound effect " + number );
 	}
