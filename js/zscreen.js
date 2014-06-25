@@ -80,6 +80,7 @@ ZScreen = {
 	ZDOM.add_lower_window();
 	
 	ZScreen.erase_window(-1);
+	//TODO 1.0 move cursors to bottom left in versions 1-4 8.5.2 , 8.6.3 , 8.7.3.2.1 , 8.7.3.3
     }
     ,
     'set_header_bytes':function(){

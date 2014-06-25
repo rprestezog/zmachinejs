@@ -952,13 +952,13 @@ ZOps = {
 	//In Versions 5 and later, the routine is called (with no parameters) after the sound has been finished (it has been playing in the background while the Z-machine has been working on other things). (This is used by 'Sherlock' to implement fading in and out, which explains why mysterious numbers like $34FB were previously thought to be to do with fading.) The routine is not called if the sound is stopped by another sound or by an effect 3 call.
 	//See the remarks to S 9 for which forms of this opcode were actually used by Infocom.
 	//In theory, @sound_effect; (with no operands at all) is illegal. However interpreters are asked to beep (as if the operand were 1) if possible, and in any case not to halt.
-	if (number == 1) {
-	    //TODO better alternatives to logging ding and beep
-	    //ZError.log("Ding!");
+	if ((number == 1) || (number === undefined)) {
+	    //TODO 1.0 better alternatives to logging ding and beep 
+	    ZError.log("Ding!");
 	} else if (number == 2) {
-	    //ZError.log("Beep!");
+	    ZError.log("Beep!");
 	} else {
-	    ZError.log("TODO: other sound effects");
+	    ZError.log("Unexpected sound effect " + number );
 	}
 	return 1;
     }

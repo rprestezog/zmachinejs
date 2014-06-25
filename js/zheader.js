@@ -38,7 +38,7 @@ ZHeader = {
 	    flags2 |= (ZHeader.flags2_stash & 3);
 	    ZHeader.flags2_stash = null
 	}
-	if (ver  == 5) {
+	if (ver == 5) {
 	    flags2 &= ~(8 + 32 + 128);
 	}
 	if (ver >= 6) {
