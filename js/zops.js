@@ -927,10 +927,10 @@ ZOps = {
 	    width -= 65536;
 	}
 	if (number > 0) {
-	    ZIO.select(number, table, width);
+	    ZIO.select_output(number, table, width);
 	}
 	if (number < 0) {
-	    ZIO.deselect(-number);
+	    ZIO.deselect_output(-number);
 	}
 	return 1;
     }
@@ -939,7 +939,7 @@ ZOps = {
 	//input_stream
 	//VAR:244 14 3 input_stream number
 	//Selects the current input stream.
-	//TODO switch to other input stream (but the game can't tell if I don't)
+	ZIO.select_input(number);
 	return 1;
     }
     ,

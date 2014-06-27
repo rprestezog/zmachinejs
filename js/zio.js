@@ -74,7 +74,15 @@ ZIO = {
 	}
     }
     ,
-    'select':function(number,table,width){
+    'select_input':function(number){
+	//OPT 1.0 actually support stream 1
+	//for now, the interpreter immediately switches back to stream 0
+	//as is permitted in 10.2.2
+	ZIO.input_stream = number;
+	ZIO.input_stream = 0;
+    }
+    ,
+    'select_output':function(number,table,width){
 	if (number == 1) {
 	    ZIO.output_streams[1] = 1;
 	} else if (number == 2) {
@@ -98,7 +106,7 @@ ZIO = {
 	}
     }
     ,
-    'deselect':function(number){
+    'deselect_output':function(number){
 	if (number == 1) {
 	    ZIO.output_streams[1] = 0;
 	} else if (number == 2) {
