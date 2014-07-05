@@ -488,6 +488,7 @@ ZIO = {
         } else {
             //TODO 1.0 function keys, and number pad 3.8.4
 	    //ZError.log('Key Down: ' + which);
+	    //TODO 1.0 support terminating characters table 10.5.2.1
         }
         return false; //prevents default and keypress
     }
