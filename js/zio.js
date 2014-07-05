@@ -408,6 +408,83 @@ ZIO = {
 	}
     }
     ,
+    'is_input_zscii':function(zscii){
+	//takes a zcscii code, returns true for input codes
+	if (zscii < 32) {
+	    if (zscii == 8) {
+		return true;
+	    } else if (zscii == 13) {
+		return true;
+	    } else if (zscii == 27) {
+		return true;
+	    } else {
+		return false;
+	    }
+	} else if (zscii < 127) {
+	    return true;
+	} else if (zscii < 129) {
+	    return false;
+	} else if (zscii < 255) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    ,
+    'is_output_zscii':function(zscii){
+	//takes a zcscii code, returns true for output codes
+	if (zscii < 32) {
+	    if (zscii == 0) {
+		return true;
+	    } else if (zscii == 13) {
+		return true;
+	    } else if (zscii == 9) {
+		var ver = ZHeader.version();
+		if (ver == 6) {
+		    return true;
+		} else {
+		    return false;
+		}
+	    } else if (zscii == 11) {
+		var ver = ZHeader.version();
+		if (ver == 6) {
+		    return true;
+		} else {
+		    return false;
+		}
+	    } else {
+		return false;
+	    }
+	} else if (zscii < 127) {
+	    return true;
+	} else if (zscii < 155) {
+	    return false;
+	} else if (zscii < 252) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    ,
+    'is_input_output_zscii':function(zscii){
+	//takes a zcscii code, returns true for input/output codes
+	if (zscii < 32) {
+	    if (zscii == 13) {
+		return true;
+	    } else {
+		return false;
+	    }
+	} else if (zscii < 127) {
+	    return true;
+	} else if (zscii < 155) {
+	    return false;
+	} else if (zscii < 252) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    ,
     'keydown':function(which){
         if (!ZIO.read_ready && !ZIO.read_char_ready) {
             return false;
