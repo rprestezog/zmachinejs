@@ -36,12 +36,17 @@ ZIO = {
 	    while (j < zscii.length) {
 		var code = zscii[j];
 		if (code != 0) {
-		    //TODO 1.0 more thorough check of printable zscii codes 7.1.2.2.1
-		    ZIO.buffer_stack[i].zscii.push(code);
+		    if (ZIO.is_output_zscii(code)) {
+			ZIO.buffer_stack[i].zscii.push(code);
+		    } else {
+			//print nothing? report error?
+			ZError.log("print illegal output code to stream 3" + code);
+		    }			
 		}
 		j++;
 	    }
 	} else {
+	    //ZString.zscii_to_string only converts output zscii codes (others error and become '?')
 	    var string = ZString.zscii_to_string(zscii);
 	    if (ZIO.output_streams[1] == 1) {
 		ZScreen.print_string(string);
@@ -58,8 +63,8 @@ ZIO = {
 	    var i = ZIO.output_streams[3] - 1;
 	    //TODO version 6 width stuff
 	    zscii = ZString.unicode_to_zscii(unicode_char);
-	    if (code != 0) {
-		//TODO 1.0 more thorough check of printable zscii codes 7.1.2.2.1
+	    if (zscii != 0) {
+		//ZString.unicode_to_zscii only returns input/output zscii
 		ZIO.buffer_stack[i].zscii.push(zscii);
 	    } else {
 		ZIO.buffer_stack[i].zscii.push(63); // '?'
@@ -580,12 +585,7 @@ ZIO = {
 		return false;
 	    };
 	}
-	var zscii = 0;
-        if (which >= 32 && which <= 126) {
-            zscii = which;
-        } else {
-	    zscii = ZString.unicode_to_zscii(which);
-	}
+	var zscii = ZString.unicode_to_zscii(which);
 	if (zscii > 0) {
 	    if (ZIO.read_ready) {
 		ZIO.input_buffer.push(zscii);

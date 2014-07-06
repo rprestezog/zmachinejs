@@ -90,6 +90,10 @@ ZString = {
 	var extra_characters_table_addr = ZHeader.get_extra_characters_table_addr();
 	if (extra_characters_table_addr > 0) {
 	    var num_characters = ZMemory.get_byte(extra_characters_table_addr);
+	    if (num_characters > 97) {
+		num_characters = 97;
+		ZError.log("Unexpected number of extra characters" + num_characters);
+	    }
 	    var table = [];
 	    var i = 0;
 	    while (i < num_characters) {
