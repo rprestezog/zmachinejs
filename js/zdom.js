@@ -59,25 +59,34 @@ ZDOM = {
     }
     ,
     'scroll_lower_window': function(amount) {
-        var pos;
-        if ($(".lower").prop) {
-            if (amount > $(".lower").prop('scrollTop') && amount > 0) {
-                $(".lower").prop('scrollTop', 0);
-            }
-            pos = $(".lower").prop('scrollTop');
-            $(".lower").prop('scrollTop', pos + amount);
-        } else {
-            if (amount > $(".lower").attr('scrollTop') && amount > 0) {
-                $(".lower").attr('scrollTop', 0);
-            }
-            pos = $(".lower").attr('scrollTop');
-            $(".lower").attr('scrollTop', pos + amount);
-        }
+	//TODO 1.0 verify that we're doing the right thing here
+	var pos =  $(".lower").scrollTop();
+	$(".lower").scrollTop(pos + amount);
+	//var pos;
+        //if ($(".lower").prop) {
+        //    if (amount > $(".lower").prop('scrollTop') && amount > 0) {
+        //        $(".lower").prop('scrollTop', 0);
+        //    }
+        //    pos = $(".lower").prop('scrollTop');
+        //    $(".lower").prop('scrollTop', pos + amount);
+        //} else {
+        //    if (amount > $(".lower").attr('scrollTop') && amount > 0) {
+        //        $(".lower").attr('scrollTop', 0);
+        //    }
+        //    pos = $(".lower").attr('scrollTop');
+        //    $(".lower").attr('scrollTop', pos + amount);
+        //}
+    }
+    ,
+    'scroll_to_top':function() {
+	$(".lower").scrollTop(0);
     }
     ,
     'scroll_to_bottom':function() {
-        var scrollHeight = $(".lower").prop ? $(".lower").prop('scrollHeight') : $(".lower").attr('scrollHeight');
+        var scrollHeight = $(".lower").prop('scrollHeight');
         $(".lower").scrollTop(scrollHeight);
+	//var scrollHeight = $(".lower").prop ? $(".lower").prop('scrollHeight') : $(".lower").attr('scrollHeight');
+        //$(".lower").scrollTop(scrollHeight);
     }
     ,
     'page_up':function() {

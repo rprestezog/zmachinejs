@@ -554,6 +554,10 @@ ZScreen = {
 	ZDOM.scroll_to_bottom();
     }
     ,
+    'scroll_to_top':function() {
+	ZDOM.scroll_to_top();
+    }
+    ,
     'scroll_up':function() {
 	ZDOM.scroll_lower_lines(-1);
     }

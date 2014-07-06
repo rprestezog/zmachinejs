@@ -511,16 +511,18 @@ ZIO = {
         } else if (which >= 219 && which <= 222) {
             //open bracket,back slash,close braket,single quote
             return true;
-        } else if (which == 8) {
-            //back space 
+        } else if (which == 8 || which == 46 || which == 12) {
+            //back space or delete or clear
 	    if(ZIO.read_ready) {
 		if (ZIO.input_buffer.length > 0) {
 		    ZIO.input_buffer.pop();
 		    ZScreen.backspace();
 		    ZScreen.scroll_to_bottom();
 		}
+		return false;
 	    } else if (ZIO.read_char_ready) {
 		ZIO.end_read_char(8);
+		return false;
 	    }
         } else if (which == 13) {
             //enter
@@ -528,8 +530,10 @@ ZIO = {
 		ZIO.input_buffer.push(13);
 		ZScreen.print_string('\n');
 		ZIO.end_read();
+		return false;
 	    } else if (ZIO.read_char_ready) {
 		ZIO.end_read_char(13);
+		return false;
 	    }
         } else if (which >= 37 && which <= 40) {
 	    //arrow keys L,U,R,D
@@ -537,42 +541,72 @@ ZIO = {
 		if (which == 37) {
 		    //Left
 		    ZIO.end_read_char(131);
+		    return false;
 		} else if (which == 38) {
 		    //Up
 		    ZIO.end_read_char(129);
+		    return false;
 		} else if (which == 39) {
 		    //Right
 		    ZIO.end_read_char(132);
+		    return false;
 		} else if (which == 40) {
 		    //Down
 		    ZIO.end_read_char(130);
+		    return false;
 		}
 	    } else {
 		if (which == 38) {
                     //Up
                     ZScreen.scroll_up();
+		    return false;
                 } else if (which == 40) {
                     //Down
                     ZScreen.scroll_down();
+		    return false;
                 }
 	    }
 	} else if (which === 34) { 
 	    // PAGE DOWN
 	    ZScreen.page_down();
+	    return false;
 	} else if (which === 33) {
 	    // PAGE UP
 	    ZScreen.page_up();
+	    return false;
+	} else if (which === 36) {
+	    // Home
+	    ZScreen.scroll_to_top();
+	    return false;
+	} else if (which === 35) {
+	    // End
+	    ZScreen.scroll_to_bottom();
+	    return false;
 	} else if (which === 27) {
 	    //escape
 	    if (ZIO.read_char_ready) {
 		ZIO.end_read_char(27);
 	    }	
+	    return false;
+	} else if (which >= 112 && which <= 123) {
+	    //function keys f1 to f12
+	    if (ZIO.read_char_ready) {
+		ZIO.end_read_char(which - 112 + 133);
+	    }
+	    return false;
+	} else if (which >= 96 && which <= 105) {
+	    //keypad 0 to 9
+	    if (ZIO.read_char_ready) {
+		ZIO.end_read_char(which - 96 + 145);
+		return false;
+	    } else {
+		return true;
+	    }
         } else {
-            //TODO 1.0 function keys, and number pad 3.8.4
 	    //ZError.log('Key Down: ' + which);
 	    //TODO 1.0 support terminating characters table 10.5.2.1
         }
-        return false; //prevents default and keypress
+        return true;
     }
     ,
     'keypress':function(which){
@@ -587,6 +621,7 @@ ZIO = {
 	}
 	var zscii = ZString.unicode_to_zscii(which);
 	if (zscii > 0) {
+	    //ZString.unicode_to_zscii only returns 0 and valid Input/Output codes
 	    if (ZIO.read_ready) {
 		ZIO.input_buffer.push(zscii);
 		var string = ZString.zscii_to_string([zscii]);
