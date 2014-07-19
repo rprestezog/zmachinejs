@@ -128,6 +128,7 @@ ZScreen = {
     }
     ,
     'erase_window':function(window){
+	ZError.log("erase window "+ window );
 	if (window == -1) {
 	    //do we postpone collapsing the upper window until next turn?
 	    //I think we don't in this case, as correct behavior would
@@ -196,6 +197,7 @@ ZScreen = {
     }
     ,
     'split_window':function(lines){
+	ZError.log("split window "+ lines );
 	ZScreen.hide_cursor();
 	if (lines == 0) {
 	    //TODO should we delay removing lines?
@@ -339,6 +341,7 @@ ZScreen = {
     }
     ,
     'set_cursor':function(line,column){
+	ZError.log("set cursor "+ column + "," + line );
 	if (ZScreen.window == 'upper') {
 	    ZScreen.hide_cursor();
 	    ZScreen.upper_cursor.x = column - 1;
@@ -535,10 +538,23 @@ ZScreen = {
     }
     ,
     'backspace':function(){
-	//TODO check if we're in a good place to back space?
-	ZDOM.lower_backspace();
-	if (ZScreen.buffer_chars > 0) {
-	    ZScreen.buffer_chars -= 1;
+	if (ZScreen.window == 'upper') {
+	    ZScreen.hide_cursor();
+	    var x = ZScreen.upper_cursor.x;
+	    var y = ZScreen.upper_cursor.y;
+	    var style = ZScreen.get_style();
+	    if ( x > 0 ) {
+		x -= 1;
+		ZScreen.upper_cursor.x = x;
+	    }
+	    ZDOM.set_upper_space(x,y,style);
+	    ZScreen.show_cursor();
+	} else {
+	    //TODO check if we're in a good place to back space?
+	    ZDOM.lower_backspace();
+	    if (ZScreen.buffer_chars > 0) {
+		ZScreen.buffer_chars -= 1;
+	    }
 	}
     }
     ,

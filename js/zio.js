@@ -144,6 +144,9 @@ ZIO = {
     }
     ,
     'read':function(text,parse){
+	ZIO.read_text = text;
+	ZIO.read_parse = parse;
+	ZIO.input_buffer = [];
 	var ver = ZHeader.version();
 	var byte_zero = ZMemory.get_byte(text);
 	if (ver < 5) {
@@ -151,8 +154,12 @@ ZIO = {
 	} else {
 	    ZIO.read_maxlength = byte_zero;
 	    var byte_one = ZMemory.get_byte(text+1);
-	    if (byte_one > 0) {
-		ZError.die("TODO read previous characters from text table");
+	    //read previous text into input buffer
+	    var i = 0;
+	    while (i < byte_one) {
+		var zscii = ZMemory.get_byte(text+2+i);
+		ZIO.input_buffer.push(zscii);
+		i += 1;
 	    }
 	}
 	if (ZIO.input_stream == 1) {
@@ -160,16 +167,13 @@ ZIO = {
 	    return 1;
 	} else {
 	    //read from screen asyncronously
-	    ZIO.read_text = text;
-	    ZIO.read_parse = parse;
-	    ZIO.input_buffer = [];
 	    ZIO.read_ready = true;
 	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    //TODO also deal with max chars and previous text?
 	    if (ZScreen.window == 'upper') {
-		ZError.die("Reading from upper window!");
+		ZError.log("Reading from upper window!");
 	    } else {
 		//TODO try and sneak previous text in here?
 	    }
@@ -178,6 +182,9 @@ ZIO = {
     }
     ,
     'read_timed':function(text,parse,time,routine){
+	ZIO.read_text = text;
+	ZIO.read_parse = parse;
+	ZIO.input_buffer = [];
 	var ver = ZHeader.version();
 	var byte_zero = ZMemory.get_byte(text);
 	if (ver < 5) {
@@ -185,8 +192,12 @@ ZIO = {
 	} else {
 	    ZIO.read_maxlength = byte_zero;
 	    var byte_one = ZMemory.get_byte(text+1);
-	    if (byte_one > 0) {
-		ZError.die("TODO read previous characters from text table");
+	    //read previous text into input buffer
+	    var i = 0;
+	    while (i < byte_one) {
+		var zscii = ZMemory.get_byte(text+2+i);
+		ZIO.input_buffer.push(zscii);
+		i += 1;
 	    }
 	}
 	if (ZIO.input_stream == 1) {
@@ -194,9 +205,6 @@ ZIO = {
 	    return 1;
 	} else {
 	    //read from screen asyncronously
-	    ZIO.read_text = text;
-	    ZIO.read_parse = parse;
-	    ZIO.input_buffer = [];
 	    ZIO.read_ready = true;
 	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
@@ -204,7 +212,7 @@ ZIO = {
 	    ZIO.read_timer = setTimeout(function(){ZIO.read_timeout(time,routine)},time*100);
 	    //TODO also deal with max chars and previous text?
 	    if (ZScreen.window == 'upper') {
-		ZError.die("Reading from upper window!");
+		ZError.log("Reading from upper window!");
 	    } else {
 		//TODO try and sneak previous text in here?
 	    }
@@ -516,6 +524,7 @@ ZIO = {
 	    if(ZIO.read_ready) {
 		if (ZIO.input_buffer.length > 0) {
 		    ZIO.input_buffer.pop();
+		    //TODO 1.0 make backspace work in upper window
 		    ZScreen.backspace();
 		    ZScreen.scroll_to_bottom();
 		}
