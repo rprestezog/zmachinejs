@@ -128,7 +128,6 @@ ZScreen = {
     }
     ,
     'erase_window':function(window){
-	ZError.log("erase window "+ window );
 	if (window == -1) {
 	    //do we postpone collapsing the upper window until next turn?
 	    //I think we don't in this case, as correct behavior would
@@ -197,7 +196,6 @@ ZScreen = {
     }
     ,
     'split_window':function(lines){
-	ZError.log("split window "+ lines );
 	ZScreen.hide_cursor();
 	if (lines == 0) {
 	    //TODO should we delay removing lines?
@@ -341,12 +339,21 @@ ZScreen = {
     }
     ,
     'set_cursor':function(line,column){
-	ZError.log("set cursor "+ column + "," + line );
 	if (ZScreen.window == 'upper') {
+	    //some games (erroneously?) set the cursor outside the current height of upper window.
+	    //It's unclear what the correct behavior is, but I'm going to try expanding the window
+	    if (line > ZScreen.cur_upper_lines) {
+		if (line <= (ZScreen.height - ZScreen.status_line)) {
+		    //ZError.log("set cursor outside upper window "+ column + "," + line );
+		    ZScreen.split_window(line);
+		} else {
+		    ZError.die("set cursor outside screen "+ column + "," + line );
+		}
+	    }
+	    //TODO should we also be checking the x values here? negatives?
 	    ZScreen.hide_cursor();
 	    ZScreen.upper_cursor.x = column - 1;
 	    ZScreen.upper_cursor.y = line - 1;
-	    //TODO should we be checking the values here?
 	}
 	//TODO figure out what to do in lower window
     }
