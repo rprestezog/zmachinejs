@@ -144,24 +144,7 @@ ZIO = {
     }
     ,
     'read':function(text,parse){
-	ZIO.read_text = text;
-	ZIO.read_parse = parse;
-	ZIO.input_buffer = [];
-	var ver = ZHeader.version();
-	var byte_zero = ZMemory.get_byte(text);
-	if (ver < 5) {
-	    ZIO.read_maxlength = byte_zero + 1;
-	} else {
-	    ZIO.read_maxlength = byte_zero;
-	    var byte_one = ZMemory.get_byte(text+1);
-	    //read previous text into input buffer
-	    var i = 0;
-	    while (i < byte_one) {
-		var zscii = ZMemory.get_byte(text+2+i);
-		ZIO.input_buffer.push(zscii);
-		i += 1;
-	    }
-	}
+	ZIO.init_read(text,parse);
 	if (ZIO.input_stream == 1) {
 	    ZError.die("Read from stream 1");
 	    return 1;
@@ -182,24 +165,7 @@ ZIO = {
     }
     ,
     'read_timed':function(text,parse,time,routine){
-	ZIO.read_text = text;
-	ZIO.read_parse = parse;
-	ZIO.input_buffer = [];
-	var ver = ZHeader.version();
-	var byte_zero = ZMemory.get_byte(text);
-	if (ver < 5) {
-	    ZIO.read_maxlength = byte_zero + 1;
-	} else {
-	    ZIO.read_maxlength = byte_zero;
-	    var byte_one = ZMemory.get_byte(text+1);
-	    //read previous text into input buffer
-	    var i = 0;
-	    while (i < byte_one) {
-		var zscii = ZMemory.get_byte(text+2+i);
-		ZIO.input_buffer.push(zscii);
-		i += 1;
-	    }
-	}
+	ZIO.init_read(text,parse);
 	if (ZIO.input_stream == 1) {
 	    ZError.die("Read from stream 1");
 	    return 1;
@@ -217,6 +183,27 @@ ZIO = {
 		//TODO try and sneak previous text in here?
 	    }
 	    return 0;
+	}
+    }
+    ,
+    'init_read':function(text,parse){
+	ZIO.read_text = text;
+	ZIO.read_parse = parse;
+	ZIO.input_buffer = [];
+	var ver = ZHeader.version();
+	var byte_zero = ZMemory.get_byte(text);
+	if (ver < 5) {
+	    ZIO.read_maxlength = byte_zero + 1;
+	} else {
+	    ZIO.read_maxlength = byte_zero;
+	    var byte_one = ZMemory.get_byte(text+1);
+	    //read previous text into input buffer
+	    var i = 0;
+	    while (i < byte_one) {
+		var zscii = ZMemory.get_byte(text+2+i);
+		ZIO.input_buffer.push(zscii);
+		i += 1;
+	    }
 	}
     }
     ,
