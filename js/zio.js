@@ -5,6 +5,8 @@ ZIO = {
     ,
     'input_buffer':null
     ,
+    'read_terminators':null
+    ,
     'read_ready':null
     ,
     'read_char_ready':null
@@ -24,6 +26,7 @@ ZIO = {
 	ZIO.input_buffer = [];
 	ZIO.read_ready = false;
 	ZIO.read_char_ready = false;
+	ZIO.read_terminators = {};
 	ZDOM.set_keydown_handler(ZIO.keydown);
 	ZDOM.set_keypress_handler(ZIO.keypress);
     }
@@ -190,6 +193,7 @@ ZIO = {
 	ZIO.read_text = text;
 	ZIO.read_parse = parse;
 	ZIO.input_buffer = [];
+	ZIO.read_terminators = {};
 	var ver = ZHeader.version();
 	var byte_zero = ZMemory.get_byte(text);
 	if (ver < 5) {
@@ -203,6 +207,32 @@ ZIO = {
 		var zscii = ZMemory.get_byte(text+2+i);
 		ZIO.input_buffer.push(zscii);
 		i += 1;
+	    }
+	    //read terminating characters table
+	    var terminating_addr = ZHeader.get_terminating_characters_table_addr();
+	    if (terminating_addr > 0) {
+		//TODO is this a static table?
+		var next_byte = ZMemory.get_byte(terminating_addr);
+		while (next_byte > 0) {
+		    if (next_byte >= 129 && next_byte <= 154) {
+			ZIO.read_terminators[next_byte] = 1;
+		    } else if (next_byte >= 252 && next_byte <= 254) {
+			ZIO.read_terminators[next_byte] = 1;
+		    } else if (next_byte == 255) {
+			var j = 129;
+			while (j < 155) {
+			    ZIO.read_terminators[j] = 1;
+			    j += 1;
+			}
+			ZIO.read_terminators[252] = 1;
+			ZIO.read_terminators[253] = 1;
+			ZIO.read_terminators[254] = 1;			
+		    } else {
+			ZError.log('unexpected terminating character = ' + next_byte);
+		    }
+		    terminating_addr += 1;
+		    next_byte = ZMemory.get_byte(terminating_addr);
+		}
 	    }
 	}
     }
@@ -601,6 +631,7 @@ ZIO = {
         } else {
 	    //ZError.log('Key Down: ' + which);
 	    //TODO 1.0 support terminating characters table 10.5.2.1
+	    //Check for inclusion in ZIO.read_terminators map
         }
         return true;
     }
