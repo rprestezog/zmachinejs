@@ -133,6 +133,10 @@ ZHeader = {
         return ZMemory.get_word(28);
     }
     ,
+    'get_terminating_characters_table_addr':function(){
+        return ZMemory.get_word(46);
+    }
+    ,
     'get_extra_characters_table_addr':function(){
 	var addr = ZHeader.get_extension_word(3);
 	return addr;
