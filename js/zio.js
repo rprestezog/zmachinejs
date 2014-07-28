@@ -159,7 +159,7 @@ ZIO = {
 	    ZScreen.scroll_to_bottom();
 	    //TODO also deal with max chars and previous text?
 	    if (ZScreen.window == 'upper') {
-		ZError.log("Reading from upper window!");
+		//ZError.log("Reading from upper window!");
 	    } else {
 		//TODO try and sneak previous text in here?
 	    }
@@ -181,7 +181,7 @@ ZIO = {
 	    ZIO.read_timer = setTimeout(function(){ZIO.read_timeout(time,routine)},time*100);
 	    //TODO also deal with max chars and previous text?
 	    if (ZScreen.window == 'upper') {
-		ZError.log("Reading from upper window!");
+		//ZError.log("Reading from upper window!");
 	    } else {
 		//TODO try and sneak previous text in here?
 	    }
@@ -519,7 +519,7 @@ ZIO = {
         if (!ZIO.read_ready && !ZIO.read_char_ready) {
             return false;
         }
-	//clear a quotebox is present
+	//clear a quotebox if present
 	ZScreen.see_upper_window();
         if (which == 32) {
             //space
@@ -563,30 +563,34 @@ ZIO = {
 	    }
         } else if (which >= 37 && which <= 40) {
 	    //arrow keys L,U,R,D
+	    var zscii;
+	    if (which == 37) {
+		//Left
+		zscii = 131;
+	    } else if (which == 38) {
+		//Up
+		zscii = 129;
+	    } else if (which == 39) {
+		//Right
+		zscii = 132;
+	    } else if (which == 40) {
+		//Down
+		zscii = 130;
+	    }
+	    
 	    if (ZIO.read_char_ready) {
-		if (which == 37) {
-		    //Left
-		    ZIO.end_read_char(131);
-		    return false;
-		} else if (which == 38) {
-		    //Up
-		    ZIO.end_read_char(129);
-		    return false;
-		} else if (which == 39) {
-		    //Right
-		    ZIO.end_read_char(132);
-		    return false;
-		} else if (which == 40) {
-		    //Down
-		    ZIO.end_read_char(130);
-		    return false;
-		}
+		ZIO.end_read_char(zscii);
+		return false;
 	    } else {
-		if (which == 38) {
+		if ( ZIO.read_terminators[zscii] == 1 ) {
+		    ZIO.input_buffer.push(zscii);
+		    ZIO.end_read();
+		    return false;
+		} else if (zscii == 129) {
                     //Up
                     ZScreen.scroll_up();
 		    return false;
-                } else if (which == 40) {
+                } else if (zscii == 130) {
                     //Down
                     ZScreen.scroll_down();
 		    return false;
@@ -616,22 +620,34 @@ ZIO = {
 	    return false;
 	} else if (which >= 112 && which <= 123) {
 	    //function keys f1 to f12
+	    var zscii = which - 112 + 133;
 	    if (ZIO.read_char_ready) {
-		ZIO.end_read_char(which - 112 + 133);
+		ZIO.end_read_char(zscii);
+	    } else {
+		if ( ZIO.read_terminators[zscii] == 1 ) {
+		    ZIO.input_buffer.push(zscii);
+		    ZIO.end_read();
+		    return false;
+		}
 	    }
 	    return false;
 	} else if (which >= 96 && which <= 105) {
 	    //keypad 0 to 9
+	    var zscii = which - 96 + 145;
 	    if (ZIO.read_char_ready) {
-		ZIO.end_read_char(which - 96 + 145);
+		ZIO.end_read_char(zscii);
 		return false;
 	    } else {
-		return true;
+		if ( ZIO.read_terminators[zscii] == 1 ) {
+		    ZIO.input_buffer.push(zscii);
+		    ZIO.end_read();
+		    return false;
+		} else {
+		    return true;
+		}
 	    }
         } else {
 	    //ZError.log('Key Down: ' + which);
-	    //TODO 1.0 support terminating characters table 10.5.2.1
-	    //Check for inclusion in ZIO.read_terminators map
         }
         return true;
     }
