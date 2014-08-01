@@ -23,10 +23,13 @@ ZHeader = {
 	//Set capability flags
 	if (ver <= 3) {
 	    //ver 1-3 ?110????
+	    //has status line,screen splitting, default variable pitch
  	    flags1 &= ~ 16;
  	    flags1 |= 96;		
 	} else {
 	    //ver 4+  1?011101
+	    //has color,bold,italics,monospace,timed input
+	    //no sound effects
  	    flags1 &= ~ 34;
  	    flags1 |= 157;
 	}
@@ -34,27 +37,31 @@ ZHeader = {
 
 	var flags2 = ZMemory.get_word(16);
 	if (ZHeader.flags2_stash !== null) {
+	    //preserve fixed pitch and transcripting bits
 	    flags2 &= ~(3);
 	    flags2 |= (ZHeader.flags2_stash & 3);
 	    ZHeader.flags2_stash = null
 	}
 	if (ver == 5) {
+	    //no pictures,mouse,sounds effects
 	    flags2 &= ~(8 + 32 + 128);
 	}
 	if (ver >= 6) {
 	    flags2 &= ~(8 + 32 + 128 + 256);
+	    //no pictures,mouse,sounds effects,menus
 	}
 	ZMemory.set_word(16,flags2)
+
+	if (ver >=4) {
+	    ZMemory.set_byte(30,4); //interpreter number -- 'Amiga', best for Beyond Zork
+	    ZMemory.set_byte(31,65); //interpreter version 'A' 
+	}
 
 	if (ver >= 5) {
 	    ZMemory.set_byte(44,9); // backgroud white
 	    ZMemory.set_byte(45,2); // foreground black
 	}
 
-	if (ver >=4) {
-	    ZMemory.set_byte(30,4); //interpreter number -- 'Amiga', best for Beyond Zork
-	    ZMemory.set_byte(31,65); //interpreter version 'A' 
-	}
 	//TODO 1.0 set bits to indicate we obey the 1.0 standard
 	//ZMemory.set_byte(50,1);
 	//ZMemory.set_byte(51,0);
