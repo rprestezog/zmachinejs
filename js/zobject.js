@@ -72,8 +72,6 @@ ZObject = {
     ,
     'get_prop_addr':function(obj,prop){
         //Get the byte address (in dynamic memory) of the property data for the given object's property. This must return 0 if the object hasn't got the property.
-	//TODO 1.0 ensure the address is in dynamic memory 15.get_prop_addr
-	//and elsewhere in this file.
 	var prop_list_addr = ZObject.get_prop_list_addr(obj);
 	var short_name_length = ZMemory.get_byte(prop_list_addr);
 	prop_list_addr += 1 + (2*short_name_length);
