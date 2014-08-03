@@ -1244,6 +1244,48 @@ ZOps = {
 	return 1;
     }
     ,
+    'EXT:5':function(picture_number,y,x){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:5');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:5');
+	}
+	return 1;
+    }
+    ,
+    'EXT:6':function(picture_number,array){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:6');
+	    
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:6');
+	}
+	ZState.branch(false);
+	return 1;
+    }
+    ,
+    'EXT:7':function(picture_number,y,x){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:7');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:7');
+	}
+	return 1;
+    }
+    ,
+    'EXT:8':function(left,right,window){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:8');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:8');
+	}
+	return 1;
+    }
+    ,
     'EXT:9':function(){
 	//save_undo
 	//EXT:9 9 5 save_undo -> (result)
@@ -1284,6 +1326,139 @@ ZOps = {
 	    ZState.store(1);
 	} else {
 	    ZState.store(3);
+	}
+	return 1;
+    }
+    ,
+    'EXT:16':function(window,y,x){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:16');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:16');
+	}
+	return 1;
+    }
+    ,
+    'EXT:17':function(window,y,x){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:17');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:17');
+	}
+	return 1;
+    }
+    ,
+    'EXT:18':function(window,flags,operation){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:18');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:18');
+	}
+	return 1;
+    }
+    ,
+    'EXT:19':function(window,property_number){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:19');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:19');
+	}
+	ZState.store(0);
+	return 1;
+    }
+    ,
+    'EXT:20':function(window,pixels){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:20');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:20');
+	}
+	return 1;
+    }
+    ,
+    'EXT:21':function(items,stack){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:21');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:21');
+	}
+	return 1;
+    }
+    ,
+    'EXT:22':function(array){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:22');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:22');
+	}
+	return 1;
+    }
+    ,
+    'EXT:23':function(window){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:23');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:23');
+	}
+	return 1;
+    }
+    ,
+    'EXT:24':function(value,stack){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:24');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:24');
+	}
+	ZState.branch(false)
+	return 1;
+    }
+    ,
+    'EXT:25':function(window,property_number,value){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:25');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:25');
+	}
+	return 1;
+    }
+    ,
+    'EXT:26':function(formatted_table){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:26');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:26');
+	}
+	return 1;
+    }
+    ,
+    'EXT:27':function(number,table){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:27');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:27');
+	}
+	ZState.branch(false)
+	return 1;
+    }
+    ,
+    'EXT:28':function(table){
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die('TODO version 6 EXT:28');
+	} else {
+	    ZError.die('illegal version 6 opcode EXT:28');
 	}
 	return 1;
     }

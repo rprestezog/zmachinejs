@@ -214,6 +214,16 @@ ZState = {
 	if (opcode in ZOps) {
 	    ZError.debug("PC:" + old_PC + " opbyte: " + op_byte_one + " opcode: " + opcode + " with operands: " + operands);
 	    return ZOps[opcode](operands[0],operands[1],operands[2],operands[3],operands[4],operands[5],operands[6],operands[7]);
+	} else if (opcode.length == 6 && opcode >= 'EXT:29' && opcode <= 'EXT:99' ) {
+	    ZError.log("unknown extended form opcode: " + opcode);
+	    ZError.log("operands: " + operands);
+	    //assuming the unknown opcode neither stores nor branches
+	    return 1;
+	} else if (opcode.length == 7 && opcode >= 'EXT:100' && opcode <= 'EXT:255' ) {
+	    ZError.log("unknown extended form opcode: " + opcode);
+	    ZError.log("operands: " + operands);
+	    //assuming the unknown opcode neither stores nor branches
+	    return 1;
 	} else {
 	    ZError.log("unknown opcode: " + opcode);
 	    ZError.log("operands: " + operands);
