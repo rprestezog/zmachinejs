@@ -146,7 +146,7 @@ ZScreen = {
 	    ZDOM.clear_lower_window(ZScreen.background);
 	    ZScreen.buffer_chars = 0;
 	    ZScreen.resize_lower_window();
-	    //TODO move cursor to bottom left for version 4
+	    //TODO 1.0 move cursor to bottom left for version 4 8.7.3.2.1
 	} else if (window == 1) {
 	    ZScreen.hide_cursor();
 	    var y = ZScreen.cur_upper_lines;

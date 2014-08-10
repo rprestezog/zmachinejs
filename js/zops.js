@@ -1,9 +1,8 @@
 ZOps = {
     '2OP:1':function(a,b,c,d){
 	//je
-	//2OP:1 1 je a b ?(label)
-	//Jump if a is equal to any of the subsequent operands. (Thus @je a never jumps and @je a b jumps if a = b.)
-	//Unclear in spec, this can apparently take more than two args in variable form
+	//2OP:1 1 je a b c d ?(label)
+	//Jump if a is equal to any of the subsequent operands. je with just one operand is not permitted.
 	if (a === b ) {
 	    ZState.branch(true);
 	} else if (a === c) {
@@ -461,6 +460,9 @@ ZOps = {
 	//jump
 	//1OP:140 C jump ?(label)
 	//Jump (unconditionally) to the given label. (This is not a branch instruction and the operand is a 2-byte signed offset to apply to the program counter.) It is legal for this to jump into a different routine (which should not change the routine call state), although it is considered bad practice to do so and the Txd disassembler is confused by it.
+	//The destination of the jump opcode is:
+	//Address after instruction + Offset - 2
+	//This is analogous to the calculation for branch offsets.
         if (offset >= 32768) {
             offset -= 65536;
         }
@@ -722,7 +724,7 @@ ZOps = {
 	//A sequence of characters is read in from the current input stream until a carriage return (or, in Versions 5 and later, any terminating character) is found.
 	//In Versions 1 to 4, byte 0 of the text-buffer should initially contain the maximum number of letters which can be typed, minus 1 (the interpreter should not accept more than this). The text typed is reduced to lower case (so that it can tidily be printed back by the program if need be) and stored in bytes 1 onward, with a zero terminator (but without any other terminator, such as a carriage return code). (This means that if byte 0 contains n then the buffer must contain n+1 bytes, which makes it a string array of length n in Inform terminology.)
 	//In Versions 5 and later, byte 0 of the text-buffer should initially contain the maximum number of letters which can be typed (the interpreter should not accept more than this). The interpreter stores the number of characters actually typed in byte 1 (not counting the terminating character), and the characters themselves in bytes 2 onward (not storing the terminating character). (Some interpreters wrongly add a zero byte after the text anyway, so it is wise for the buffer to contain at least n+3 bytes.)
-	//Moreover, if byte 1 contains a positive value at the start of the input, then read assumes that number of characters are left over from an interrupted previous input, and writes the new characters after those already there. Note that the interpreter does not redisplay the characters left over: the game does this, if it wants to. This is unfortunate for any interpreter wanting to give input text a distinctive appearance on-screen, but 'Beyond Zork', 'Zork Zero' and 'Shogun' clearly require it. ("Just a tremendous pain in my butt" -- Andrew Plotkin; "the most unfortunate feature of the Z-machine design" -- Stefan Jokisch.)
+	//Moreover, if byte 1 contains a positive value at the start of the input, then read assumes that number of characters are left over from an interrupted previous input, and writes the new characters after those already there. Note that the interpreter does not redisplay the characters left over: the game must do this, although it may choose to redisplay any or all of the characters in uppercase. This is unfortunate for any interpreter wanting to give input text a distinctive appearance on-screen, but 'Beyond Zork', 'Zork Zero' and 'Shogun' clearly require it. ("Just a tremendous pain in my butt" -- Andrew Plotkin; "the most unfortunate feature of the Z-machine design" -- Stefan Jokisch.)
 	//In Version 4 and later, if the operands time and routine are supplied (and non-zero) then the routine call routine() is made every time/10 seconds during the keyboard-reading process. If this routine returns true, all input is erased (to zero) and the reading process is terminated at once. (The terminating character code is 0.) The routine is permitted to print to the screen even if it returns false to signal "carry on": the interpreter should notice and redraw the input line so far, before input continues. (Frotz notices by looking to see if the cursor position is at the left-hand margin after the interrupt routine has returned.)
 	//If input was terminated in the usual way, by the player typing a carriage return, then a carriage return is printed (so the cursor moves to the next line). If it was interrupted, the cursor is left at the rightmost end of the text typed in so far.
 	//Next, lexical analysis is performed on the text (except that in Versions 5 and later, if parse-buffer is zero then this is omitted). Initially, byte 0 of the parse-buffer should hold the maximum number of textual words which can be parsed. (If this is n, the buffer must be at least 2 + 4*n bytes long to hold the results of the analysis.)
@@ -802,7 +804,7 @@ ZOps = {
 	//Pulls value off a stack. (If the stack underflows, the interpreter should halt with a suitable error message.) In Version 6, the stack in question may be specified as a user one: otherwise it is the game stack.
 	var ver = ZHeader.version();
 	if (ver == 6) {
-	    ZError.die("Version 6 has user stacks");	    
+	    ZError.die("TODO version 6 has user stacks");	    
 	} else {
 	    var value = ZState.get_variable(0);
 	    //write in place
@@ -839,7 +841,7 @@ ZOps = {
     'VAR:237':function(window){
 	//erase_window
 	//VAR:237 D 4 erase_window window
-	//Erases window with given number (to background colour); or if -1 it unsplits the screen and clears the lot; or if -2 it clears the screen without unsplitting it. In cases -1 and -2, the cursor may move (see S 8 for precise details).
+	//Erases window with given number (to background colour); or if -1 it unsplits the screen and clears the lot; or if -2 it clears the screen without unsplitting it. In cases -1 and -2, the The cursor may move if the window number given is -1 (see S 8 for precise details).
         if (window >= 32768) {
             window -= 65536;
         }
@@ -852,15 +854,13 @@ ZOps = {
 	//VAR:238 E 4/6 erase_line value
 	//Versions 4 and 5: if the value is 1, erase from the current cursor position to the end of its line in the current window. If the value is anything other than 1, do nothing.
 	//Version 6: if the value is 1, erase from the current cursor position to the end of the its line in the current window. If not, erase the given number of pixels minus one across from the cursor (clipped to stay inside the right margin). The cursor does not move.
-	if (value == 1) {
-	    ZScreen.erase_line();
+	var ver = ZHeader.version();
+	if (ver == 6) {
+	    ZError.die("TODO: version 6 erase_line");
 	} else {
-	    var ver = ZHeader.version();
-	    if (ver == 6) {
-		ZError.die("TODO: version 6 erase_line");
-	    } else {
-		//Do nothing
-	    }
+	    if (value == 1) {
+		ZScreen.erase_line();
+	    } //else do nothing
 	}
 	return 1;
     }
@@ -904,11 +904,14 @@ ZOps = {
 	//VAR:242 12 4 buffer_mode flag
 	//If set to 1, text output on the lower window in stream 1 is buffered up so that it can be word-wrapped properly. If set to 0, it isn't.
 	//In Version 6, this opcode is redundant (the "buffering" window attribute can be set instead). It is used twice in each of Infocom's Version 6 story files, in the $verify routine. Frotz responds by setting the current window's "buffering" attribute, while Infocom's own interpreters respond by doing nothing. This standard leaves the result of buffer_mode undefined in Version 6.
-	if (flag == 0) {
-	    ZScreen.set_buffer_mode(0);
-	} else {
-	    ZScreen.set_buffer_mode(1);
-	}
+        var ver = ZHeader.version();
+        if (ver != 6) {
+	    if (flag == 0) {
+		ZScreen.set_buffer_mode(0);
+	    } else {
+		ZScreen.set_buffer_mode(1);
+	    }
+        } // else do nothing
 	return 1;
     }
     ,
@@ -1109,7 +1112,7 @@ ZOps = {
     'VAR:254':function(zscii_text, width, height, skip){
 	//print_table
 	//VAR:254 1E 5 print_table zscii-text width height skip
-	//Print a rectangle of text on screen spreading right and down from the current cursor position, of given width and height, from the table of ZSCII text given. (Height is optional and defaults to 1.) If a skip value is given, then that many characters of text are skipped over in between each line and the next. (So one could make this display, for instance, a 2 by 3 window onto a giant 40 by 40 character graphics map.)
+	//Print a rectangle of text on screen spreading right and down from the current cursor position, of given width and height, from the table of ZSCII text given. (Height is optional and defaults to 1.) If a skip value is given, then that many characters of text are skipped over in between each line and the next. (So one could make this display, for instance, a 2 by 3 window onto a giant 40 by 40 character graphics map.) Version 5 games must only use print_table in the upper window. Its behaviour in the lower window is undefined.
 	if (height == undefined) {
 	    height = 1;
 	}
@@ -1245,6 +1248,9 @@ ZOps = {
     }
     ,
     'EXT:5':function(picture_number,y,x){
+	//draw_picture
+	//EXT:5 5 6 draw_picture picture-number y x
+	//Displays the picture with the given number. (y,x) coordinates (of the top left of the picture) are each optional, in that a value of zero for y or x means the cursor y or x coordinate in the current window. It is illegal to call this with an invalid picture number.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:5');
@@ -1255,6 +1261,11 @@ ZOps = {
     }
     ,
     'EXT:6':function(picture_number,array){
+	//picture_data
+	//EXT:6 6 6 picture_data picture-number array ?(label)
+	//Asks the interpreter for data on the picture with the given number. If the picture number is valid, a branch occurs and information is written to the array: the height in word 0, the width in word 1, in pixels. (This is an array, not a "table" with initial size information.)
+	//Otherwise, if the picture number is zero, the interpreter writes the number of available pictures into word 0 of the array and the release number of the picture file into word 1, and branches if any pictures are available. (Infocom's first Version 6 Amiga interpreter did not handle this case properly, and early releases of 'Zork Zero' did not use it. The feature may have been added on the MSDOS release of 'Zork Zero'.)
+	//Otherwise, nothing happens.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:6');
@@ -1267,6 +1278,9 @@ ZOps = {
     }
     ,
     'EXT:7':function(picture_number,y,x){
+	//erase_picture
+	//EXT:7 7 6 erase_picture picture-number y x
+	//Like draw_picture, but paints the appropriate region to the background colour for the given window. It is illegal to call this with an invalid picture number.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:7');
@@ -1277,6 +1291,9 @@ ZOps = {
     }
     ,
     'EXT:8':function(left,right,window){
+	//set_margins
+	//EXT:8 8 6 set_margins left right window
+	//Sets the margin widths (in pixels) on the left and right for the given window (which are by default 0). If the cursor is overtaken and now lies outside the margins altogether, move it back to the left margin of the current line (see S 8.8.3.2.2.1).
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:8');
@@ -1331,6 +1348,9 @@ ZOps = {
     }
     ,
     'EXT:16':function(window,y,x){
+	//move_window
+	//EXT:16 10 6 move_window window y x
+	//Moves the given window to pixels (y,x): (1,1) being the top left. Nothing actually happens (since windows are entirely notional transparencies): but any future plotting happens in the new place.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:16');
@@ -1341,6 +1361,9 @@ ZOps = {
     }
     ,
     'EXT:17':function(window,y,x){
+	//window_size
+	//EXT:17 11 6 window_size window y x
+	//Change size of window in pixels. (Does not change the current display.)
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:17');
@@ -1351,6 +1374,10 @@ ZOps = {
     }
     ,
     'EXT:18':function(window,flags,operation){
+	//window_style
+	//EXT:18 12 6 window_style window flags operation
+	//Changes attributes for a given window. A bitmap of attributes is given, in which the bits are: 0 -- keep text within margins, 1 -- scroll when at bottom, 2 -- copy text to output stream 2 (the printer), 3 -- buffer text to word-wrap it between the margins of the window.
+	//The operation, by default, is 0, meaning "set to these settings". 1 means "set the bits supplied". 2 means "clear the ones supplied", and 3 means "reverse the bits supplied" (i.e. eXclusive OR).
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:18');
@@ -1361,6 +1388,9 @@ ZOps = {
     }
     ,
     'EXT:19':function(window,property_number){
+	//get_wind_prop
+	//EXT:19 13 6 get_wind_prop window property-number -> (result)
+	//Reads the given property of the given window (see S 8).
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:19');
@@ -1372,6 +1402,9 @@ ZOps = {
     }
     ,
     'EXT:20':function(window,pixels){
+	//scroll_window
+	//EXT:20 14 6 scroll_window window pixels
+	//Scrolls the given window by the given number of pixels (a negative value scrolls backwards, i.e., down) writing in blank (background colour) pixels in the new lines. This can be done to any window and is not related to the "scrolling" attribute of a window.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:20');
@@ -1382,6 +1415,9 @@ ZOps = {
     }
     ,
     'EXT:21':function(items,stack){
+	//pop_stack
+	//EXT:21 15 6 pop_stack items stack
+	//The given number of items are thrown away from the top of a stack: by default the system stack, otherwise the one given as a second operand.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:21');
@@ -1392,6 +1428,18 @@ ZOps = {
     }
     ,
     'EXT:22':function(array){
+	//read_mouse
+	//EXT:22 16 6 read_mouse array
+	//The four words in the array are written with the mouse y coordinate, x coordinate, button bits, and a menu word.
+	//The buttons bits are arranged so that the "primary" button is the lowest bit, the "secondary" (if present) is the next lowest bit, and so on, up to a potential 16 buttons. The ordering of buttons should be that which is most natural for the host system. Here are some suggested assignments:
+	//Button assignments
+	//Platform   Bit 0 (low)   Bit 1     Bit 2
+	//----------------------------------------
+	//RISC OS    Select        Adjust    Menu
+	//MacOS      Primary/only  Secondary Tertiary   ...
+	//Windows    Left          Right     Middle
+	//X          Left          Right     Middle
+	//In the menu word, the upper byte is the menu number and the lower byte is the item number (from 0). (Note that the array isn't a table and has no initial size information. The data is written to words 0 to 3 in the array.)
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:22');
@@ -1402,6 +1450,9 @@ ZOps = {
     }
     ,
     'EXT:23':function(window){
+	//mouse_window
+	//EXT:23 17 6 mouse_window window
+	//Constrain the mouse arrow to sit inside the given window. By default it sits in window 1. Setting to -1 takes all restriction away. (The mouse clicks are not reported if the arrow is outside the window and interpreters are presumably supposed to hold the arrow there by hardware means if possible.)
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:23');
@@ -1412,6 +1463,9 @@ ZOps = {
     }
     ,
     'EXT:24':function(value,stack){
+	//push_stack
+	//EXT:24 18 6 push_stack value stack ?(label)
+	//Pushes the value onto the specified user stack, and branching if this was successful. If the stack overflows, nothing happens (this is not an error condition).
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:24');
@@ -1423,6 +1477,9 @@ ZOps = {
     }
     ,
     'EXT:25':function(window,property_number,value){
+	//put_wind_prop
+	//EXT:25 19 6 put_wind_prop window property-number value
+	//Writes a window property (see get_wind_prop). This should only be used when there is no direct command (such as move_window) to use instead, as some such operations may have side-effects.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:25');
@@ -1433,6 +1490,9 @@ ZOps = {
     }
     ,
     'EXT:26':function(formatted_table){
+	//print_form
+	//EXT:26 1A 6 print_form formatted-table
+	//Prints a formatted table of the kind written to output stream 3 when formatting is on. This is an elaborated version of print_table to cope with fonts, pixels and other impedimenta. It is a sequence of lines, terminated with a zero word. Each line is a word containing the number of characters, followed by that many bytes which hold the characters concerned.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:26');
@@ -1443,6 +1503,9 @@ ZOps = {
     }
     ,
     'EXT:27':function(number,table){
+	//make_menu
+	//EXT:27 1B 6 make_menu number table ?(label)
+	//Controls menus with numbers greater than 2 (i.e., it doesn't control the three system menus). If the table supplied is 0, the menu is removed. Otherwise it is a table of tables. Each table is a ZSCII string: the first item being a menu name, subsequent ones the entries.
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:27');
@@ -1454,6 +1517,9 @@ ZOps = {
     }
     ,
     'EXT:28':function(table){
+	//picture_table
+	//EXT:28 1C 6 picture_table table
+	//Given a table of picture numbers, the interpreter may if it wishes load or unpack these pictures from disc into a cache for convenient rapid plotting later. 'Zork Zero' makes frequent use of this, for instance for its peggleboard display. Moreover, it expects rapid plotting only for those images listed in the last call to picture_table. In other words, any images still in the cache when picture_table is called can safely be thrown away. (The Amiga interpreter 6.14 uses a cache of size 5K and never caches any individual image larger than 1K.)
 	var ver = ZHeader.version();
 	if (ver == 6) {
 	    ZError.die('TODO version 6 EXT:28');

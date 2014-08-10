@@ -245,8 +245,9 @@ ZIO = {
 	ZIO.read_timer = undefined;
 	var ver = ZHeader.version();
 	if (ZHeader.is_transcript_on()) {
+	    //TODO Should this happen in upper window reads?
+	    //the answer appears to be no
 	    if (ver != 6) {
-		//TODO Should this happen in upper window reads?
 		var string = ZString.zscii_to_string(ZIO.input_buffer);
 		ZTranscript.print_string(string);
 	    }
@@ -306,7 +307,8 @@ ZIO = {
 		ZIO.end_read();
 		//OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	    } else {
-		//TODO if the there has been printing, reprint input.
+		//TODO 1.0 if the there has been printing, reprint input.
+		//From 15.read:  The routine is permitted to print to the screen even if it returns false to signal "carry on": the interpreter should notice and redraw the input line so far, before input continues. (Frotz notices by looking to see if the cursor position is at the left-hand margin after the interrupt routine has returned.)
 		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
 		ZScreen.scroll_to_bottom();
