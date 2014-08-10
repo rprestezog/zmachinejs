@@ -80,7 +80,6 @@ ZScreen = {
 	ZDOM.add_lower_window();
 	
 	ZScreen.erase_window(-1);
-	//TODO 1.0 move cursors to bottom left in versions 1-4 8.5.2 , 8.6.3 , 8.7.3.2.1 , 8.7.3.3
     }
     ,
     'set_header_bytes':function(){
@@ -142,11 +141,28 @@ ZScreen = {
 	    ZScreen.window = 'lower';
 	    ZScreen.upper_cursor = {x:0,y:0,old_color:null,shown:false};
 	    ZScreen.resize_lower_window();
+	    var ver = ZHeader.version();
+	    if (ver < 5) {
+		//move cursor to lower left
+		var i = 0;
+		while (i < ZScreen.height) {
+		    ZDOM.print_lower_newline();
+		    i += 1;
+		}
+	    }
 	} else if (window == 0) {
 	    ZDOM.clear_lower_window(ZScreen.background);
 	    ZScreen.buffer_chars = 0;
 	    ZScreen.resize_lower_window();
-	    //TODO 1.0 move cursor to bottom left for version 4 8.7.3.2.1
+	    var ver = ZHeader.version();
+	    if (ver < 5) {
+		//move cursor to lower left
+		var i = 0;
+		while (i < ZScreen.height) {
+		    ZDOM.print_lower_newline();
+		    i += 1;
+		}
+	    }
 	} else if (window == 1) {
 	    ZScreen.hide_cursor();
 	    var y = ZScreen.cur_upper_lines;
