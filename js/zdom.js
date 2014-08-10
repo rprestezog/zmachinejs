@@ -2,7 +2,6 @@ ZDOM = {
     // This file will isolate all of the functions which touch the DOM
     // The idea here is that if I wanted to switch from jquery to something else
     // I'd only have to mess with this file.
-    // TODO 1.0 expose the zmachine version number to the reader somehow, as suggested in the preamble
     'mono_width':null
     ,
     'mono_height':null

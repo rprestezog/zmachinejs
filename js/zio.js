@@ -543,7 +543,6 @@ ZIO = {
 	    if(ZIO.read_ready) {
 		if (ZIO.input_buffer.length > 0) {
 		    ZIO.input_buffer.pop();
-		    //TODO 1.0 make backspace work in upper window
 		    ZScreen.backspace();
 		    ZScreen.scroll_to_bottom();
 		}
@@ -674,19 +673,8 @@ ZIO = {
 		ZScreen.show_cursor();
 		ZScreen.scroll_to_bottom();
 		if (ZIO.input_buffer.length == 3 && ZIO.input_buffer[0] == ZIO.input_buffer[1] && ZIO.input_buffer[0] == ZIO.input_buffer[2] ) {
-		    if (ZIO.input_buffer[0] == 65) {
-			//AAA
-			ZError.start_debug();
-		    } else if (ZIO.input_buffer[0] == 90) {
-			//ZZZ
-			ZError.stop_debug();
-		    } else if (ZIO.input_buffer[0] == 67) {
-			//CCC
-			ZError.clear_errors();
-		    } else if (ZIO.input_buffer[0] == 79) {
-			//OOO
-			ZError.dump_objects();
-		    }
+		    var command = ZString.zscii_to_string(ZIO.input_buffer);
+		    ZIO.interpreter_command(command);
 		}
 	    } else if (ZIO.read_char_ready) {
                 ZIO.end_read_char(zscii);
@@ -695,5 +683,21 @@ ZIO = {
             ZError.log("Key Press! [" + which + "]");
 	}
         return false; //prevents default
+    }
+    ,
+    'interpreter_command':function(command){
+	//nothing in here should have major side effects on the game
+	//and we should avoid things likely to be typed for other purposes
+	if (command == 'AAA') {
+	    ZError.start_debug();
+	} else if (command == 'ZZZ') {
+	    ZError.stop_debug();
+	} else if (command == 'CCC') {
+	    ZError.clear_errors();
+	} else if (command == 'OOO') {
+	    ZError.dump_objects();
+	} else if (command == 'VVV') {
+	    ZError.show_version();
+	}
     }
 };

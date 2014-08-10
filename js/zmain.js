@@ -1,6 +1,7 @@
 //this file contains the script that does the following:
 //loads modules
 //provides entry point for loading games
+//TODO 1.0 add license info
 
 require.config({
 	urlArgs: "bust=" +  (new Date()).getTime()
