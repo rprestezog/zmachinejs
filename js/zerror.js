@@ -53,10 +53,10 @@ ZError = {
 	//TODO find a better home for this than zerror
         var major = ZMemory.get_byte(50);
         var minor = ZMemory.get_byte(51);
-	ZError.log('This Z-Machine interpreter is called zmachinejs.');
+	ZError.log('This Z-Machine interpreter is called zmachinejs');
 	ZError.log('It aims to support Version ' + major + '.' + minor +' of the Z-Machine Standards Document ' +
-		   'and all versions of the Z-Machine excluding version 6.');
-	ZError.log('The source code is available at <TODO 1.0>');
+		   'and all versions of the Z-Machine excluding version 6');
+	ZError.log('The source code is available at https://github.com/rprestezog/zmachinejs');
 	ZError.log('Copyright 2014 Robert Prestezog');
 	ZError.log('It is distributed with the GNU General Public License http://www.gnu.org/licenses/');	
     }
