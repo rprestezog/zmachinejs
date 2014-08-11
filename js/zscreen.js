@@ -33,11 +33,14 @@ ZScreen = {
     ,
     'buffer_chars':null
     ,
+    'interrupt_printing':null
+    ,
     'init_screen':function(){
 	ZScreen.quote_style = 1; //left and right quotes in place of ` and '
 	ZScreen.cursor_color = '#D3D3D3';
 	ZScreen.buffer_mode = 1;
 	ZScreen.buffer_chars = 0;
+	ZScreen.interrupt_printing = true;
 	var body_size = ZDOM.get_body_size();
 	var max_width = body_size.width;
 	var max_height = body_size.height;
@@ -150,6 +153,7 @@ ZScreen = {
 		    i += 1;
 		}
 	    }
+	    ZScreen.interrupt_printing = true;
 	} else if (window == 0) {
 	    ZDOM.clear_lower_window(ZScreen.background);
 	    ZScreen.buffer_chars = 0;
@@ -163,6 +167,7 @@ ZScreen = {
 		    i += 1;
 		}
 	    }
+	    ZScreen.interrupt_printing = true;
 	} else if (window == 1) {
 	    ZScreen.hide_cursor();
 	    var y = ZScreen.cur_upper_lines;
@@ -454,6 +459,7 @@ ZScreen = {
 		}
 	    }
 	} else if (string.length == 1) {
+	    ZScreen.interrupt_printing = true;
 	    if (ZScreen.buffer_mode == 0 && ZScreen.buffer_chars >= ZScreen.width) {
 		ZDOM.print_lower_newline();
 		ZScreen.buffer_chars = 0;
@@ -473,6 +479,7 @@ ZScreen = {
 		ZScreen.buffer_chars += 1;
 	    }
 	} else {
+	    ZScreen.interrupt_printing = true;
 	    if (ZScreen.font == 3) {
 		ZError.log("TODO: font 3 strings");
 	    }
@@ -573,6 +580,7 @@ ZScreen = {
 	    ZDOM.set_upper_space(x,y,style);
 	    ZScreen.show_cursor();
 	} else {
+	    ZScreen.interrupt_printing = true;
 	    //TODO check if we're in a good place to back space?
 	    ZDOM.lower_backspace();
 	    if (ZScreen.buffer_chars > 0) {
@@ -611,5 +619,13 @@ ZScreen = {
     ,
     'page_down':function() {
 	ZDOM.page_down();
+    }
+    ,
+    'clear_interrupt_printing':function() {
+	ZScreen.interrupt_printing = false;
+    }
+    ,
+    'check_interrupt_printing':function() {
+	return ZScreen.interrupt_printing;
     }
 };

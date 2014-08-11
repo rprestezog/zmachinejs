@@ -157,12 +157,6 @@ ZIO = {
 	    ZScreen.see_upper_window();
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
-	    //TODO also deal with max chars and previous text?
-	    if (ZScreen.window == 'upper') {
-		//ZError.log("Reading from upper window!");
-	    } else {
-		//TODO try and sneak previous text in here?
-	    }
 	    return 0;
 	}
     }
@@ -179,12 +173,6 @@ ZIO = {
 	    ZScreen.show_cursor();
 	    ZScreen.scroll_to_bottom();
 	    ZIO.read_timer = setTimeout(function(){ZIO.read_timeout(time,routine)},time*100);
-	    //TODO also deal with max chars and previous text?
-	    if (ZScreen.window == 'upper') {
-		//ZError.log("Reading from upper window!");
-	    } else {
-		//TODO try and sneak previous text in here?
-	    }
 	    return 0;
 	}
     }
@@ -244,7 +232,7 @@ ZIO = {
 	}
 	ZIO.read_timer = undefined;
 	var ver = ZHeader.version();
-	if (ZHeader.is_transcript_on()) {
+	if (ZHeader.is_transcript_on() && ZScreen.is_transcript_on()) {
 	    //TODO Should this happen in upper window reads?
 	    //the answer appears to be no
 	    if (ver != 6) {
@@ -301,14 +289,24 @@ ZIO = {
     ,
     'read_timeout':function(time,routine){
 	if (ZIO.read_ready) {
+	    ZScreen.clear_interrupt_printing();
 	    var abort = ZState.call_interrupt_routine(routine);
 	    if (abort) {
 		ZIO.input_buffer = [0];
 		ZIO.end_read();
 		//OPT 1.0 support for stream 4  7.1.2 , 7.6.5
 	    } else {
-		//TODO 1.0 if the there has been printing, reprint input.
-		//From 15.read:  The routine is permitted to print to the screen even if it returns false to signal "carry on": the interpreter should notice and redraw the input line so far, before input continues. (Frotz notices by looking to see if the cursor position is at the left-hand margin after the interrupt routine has returned.)
+		//if the there has been printing, reprint input.
+		if (ZScreen.check_interrupt_printing()) {
+		    //TODO only in upper window?
+		    var i = 0;
+		    while (i < ZIO.input_buffer.length) {
+			//TODO check that this works
+			var c = ZString.zscii_to_string(ZIO.input_buffer[i]);
+			ZScreen.print_string(c);
+			i += 1;
+		    }
+		}
 		ZScreen.see_upper_window();
 		ZScreen.show_cursor();
 		ZScreen.scroll_to_bottom();
