@@ -62,7 +62,6 @@ ZHeader = {
 	    ZMemory.set_byte(45,2); // foreground black
 	}
 
-	//TODO 1.0 obey the 1.0 standard
 	ZMemory.set_byte(50,1);
 	ZMemory.set_byte(51,0);
     }
