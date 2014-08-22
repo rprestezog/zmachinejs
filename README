@@ -1,0 +1,32 @@
+zmachinejs is a Z-Machine interpreter written in javascript for playing interactive fiction games in a web browser.  It aims to support Version 1.0 of the Z-Machine Standards Document and all versions of the Z-Machine excluding version 6.
+The source code for zmachinejs is available at https://github.com/rprestezog/zmachinejs
+Copyright 2014 Robert Prestezog
+It is distributed with the GNU General Public License http://www.gnu.org/licenses/
+
+A few files in this repository hold other copyrights and have different licenses. Specifically:
+jquery.js and jquery.min.js are distributed under the MIT license.
+require.js is Copyright (c) 2010-2014, The Dojo Foundation and available via the MIT or new BSD license.
+Spider And Web (tangle.z5) is copyright 1997-8 by Andrew Plotkin. It may be copied, distributed, and played freely.
+
+zmachinejs was a fun hobby project for me to learn some javascript.  I do not intend to support this software in the long term.  I did only some testing, and nearly all of it in the Chrome browser, so it would not surprise me to learn that there are many bugs.  There are many features that have been left for others to make work; if you want to do this, go right ahead!
+
+To get the code up and running, you'll likely need to have the files served from a webserver (I've just been servering them to and from my laptop via localhost).  I've included a bare bones example of how you might set things up
+zexample.html:
+<html>
+  <head>
+    <script data-main="../js/zmain" src="../js/require.js"></script>
+  </head>
+  <body>
+    <h1> Choose a story file: </h1>
+    <ul>
+      <li><a class="story" href="../stories/tangle.z5">Andrew Plotkin's <i>Spider and Web</i> </a></li>
+    </ul>
+  </body>
+</html>
+
+The javascript takes a few seconds to load, so don't click too soon.  I've got require.js managing the loading, but you could certainly concatenate and minify everthing into one file if you wanted to.
+
+Basically, zmachinejs will try to run any z-code linked by a "story" class link.  It does not currently work with cross-origin URLs, so the javascript and the storyfile have to be served from the same domain.
+
+I'm sharing this with the world in the hopes that some people will enjoy it and perhaps take it under their wing to make it better.  I really hope that it is not a source of frustration for people.  I am providing it "as is", with no warranty of any kind, and that sadly includes no tech support.
+
